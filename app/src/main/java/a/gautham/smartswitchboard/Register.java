@@ -15,7 +15,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -521,11 +520,13 @@ public class Register extends AppCompatActivity {
                                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                       finish();
                                   }else {
+                                      Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task2.getException()).getMessage()), Color.RED, Color.WHITE);
                                       Log.e("Register: ", Objects.requireNonNull(Objects.requireNonNull(task2.getException()).getMessage()));
                                   }
                                });
 
                    }else {
+                       Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task1.getException()).getMessage()), Color.RED, Color.WHITE);
                        Log.e("Register: ", Objects.requireNonNull(Objects.requireNonNull(task1.getException()).getMessage()));
                    }
                });
