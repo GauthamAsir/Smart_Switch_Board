@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="@dimen/_12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/_12dp">
+
+        <ImageView
+            android:id="@+id/switch_img"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/switch_icon" />
+
+        <TextView
+            android:id="@+id/switch_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="0"
+            android:textAppearance="?android:textAppearanceLarge"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_bt"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/_6dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            app:track="@drawable/track_selector"
+            android:thumb="@drawable/thumb_selector"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
