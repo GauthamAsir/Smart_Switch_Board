@@ -4,12 +4,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.Window;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -26,50 +32,44 @@ import java.util.Objects;
 
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.models.CurrentDevice;
+import a.gautham.smartswitchboard.navigation.Home;
+import a.gautham.smartswitchboard.navigation.Settings;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
-    private boolean isFABOpen = false;
-    private Animation fab_open, fab_close, rotate_forward, rotate_backward;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        getAccountInfo();
 
-        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
-        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-    }
+        Window window = getWindow();
+        window.setStatusBarColor(getResources().getColor(R.color.overlayBackground));
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        getSupportActionBar().setTitle(R.string.menu_home);
 
-        binding.wificonfig.setOnClickListener(view -> animateFAB());
+        binding.navView.setNavigationItemSelectedListener(this);
 
-    }
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-    public void animateFAB() {
-
-        if (isFABOpen) {
-            binding.wificonfig.startAnimation(rotate_backward);
-            binding.newConnectionContainer.startAnimation(fab_close);
-            binding.shareCodeContainer.startAnimation(fab_close);
-            isFABOpen = false;
-        } else {
-            binding.wificonfig.startAnimation(rotate_forward);
-            binding.newConnectionContainer.startAnimation(fab_open);
-            binding.shareCodeContainer.startAnimation(fab_open);
-            isFABOpen = true;
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
+            binding.navView.setCheckedItem(R.id.nav_home);
         }
+
+        getAccountInfo();
     }
 
     private void getAccountInfo() {
@@ -140,4 +140,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.nav_home:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
+                getSupportActionBar().setTitle(R.string.menu_home);
+                break;
+            case R.id.nav_settings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Settings()).commit();
+                getSupportActionBar().setTitle(R.string.menu_settings);
+                break;
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
