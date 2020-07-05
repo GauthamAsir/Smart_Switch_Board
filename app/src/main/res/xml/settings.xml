@@ -14,6 +14,7 @@
             app:entryValues="@array/theme_values"
             app:icon="@drawable/ic_outline_color_lens_24"
             app:key="themes"
+            app:defaultValue="follow_system"
             app:title="@string/themes"
             app:useSimpleSummaryProvider="true" />
 
