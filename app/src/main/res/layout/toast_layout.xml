@@ -12,7 +12,7 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
+        android:textAppearance="?android:textAppearanceSmall"
         android:gravity="center"
         android:paddingStart="@dimen/_12dp"
         android:paddingEnd="@dimen/_12dp"
