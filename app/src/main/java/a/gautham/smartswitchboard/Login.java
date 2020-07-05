@@ -1,6 +1,8 @@
 package a.gautham.smartswitchboard;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -65,11 +67,13 @@ public class Login extends AppCompatActivity {
 
             FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
                     .addOnCompleteListener(task -> {
-                       if (task.isSuccessful()){
+                       if (task.isSuccessful()) {
+                           SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                           preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
                            Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                            if (dialog.isShowing())
                                dialog.dismiss();
-                           startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                           startActivity(new Intent(getApplicationContext(), MainActivity.class));
                            finish();
                        }else {
                            if (dialog.isShowing())

@@ -1,6 +1,8 @@
 package a.gautham.smartswitchboard;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -194,6 +196,8 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
 
                         if (documentSnapshot.exists()) {
 
+                            SharedPreferences preferences = Objects.requireNonNull(getActivity()).getSharedPreferences("User", Context.MODE_PRIVATE);
+                            preferences.edit().putString("uid", Objects.requireNonNull(documentSnapshot.get("uid")).toString()).apply();
                             Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
 
                             Common.toastShort(getActivity(), "Login successful", Color.GREEN, Color.BLACK);

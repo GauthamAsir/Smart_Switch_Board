@@ -1,6 +1,8 @@
 package a.gautham.smartswitchboard;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -520,7 +522,11 @@ public class Register extends AppCompatActivity {
                                    if (dialog.isShowing())
                                        dialog.dismiss();
 
-                                  if (task2.isSuccessful()){
+                                  if (task2.isSuccessful()) {
+
+                                      SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                                      preferences.edit().putString("uid", user.getUid()).apply();
+
                                       Common.uid = user.getUid();
                                       Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN, Color.BLACK);
                                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
