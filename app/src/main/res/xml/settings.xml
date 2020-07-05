@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:initialExpandedChildrenCount="4">
+    app:initialExpandedChildrenCount="4"
+    app:key="root">
 
     <PreferenceCategory app:title="@string/account">
 
