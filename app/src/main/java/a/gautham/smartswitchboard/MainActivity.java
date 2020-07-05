@@ -10,7 +10,6 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
     private boolean isFABOpen = false;
-    private FloatingActionButton fab;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
 
     @Override
@@ -55,9 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        binding.wificonfig.setOnClickListener(view -> {
-            animateFAB();
-        });
+        binding.wificonfig.setOnClickListener(view -> animateFAB());
 
     }
 
