@@ -7,4 +7,5 @@
     <dimen name="_42sp">42sp</dimen>
     <dimen name="_3dp">3dp</dimen>
     <dimen name="_32sp">32sp</dimen>
+    <dimen name="_30sp">30sp</dimen>
 </resources>
