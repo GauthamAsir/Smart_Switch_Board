@@ -154,12 +154,13 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (item.getItemId()) {
             case R.id.nav_home:
+            default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
                 Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_settings);
+                binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
                 break;
             case R.id.nav_logout:
 
