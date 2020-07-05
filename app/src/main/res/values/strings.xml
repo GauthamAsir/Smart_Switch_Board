@@ -35,4 +35,6 @@
     <string name="_0">0</string>
     <string name="enter_otp">Enter Otp</string>
     <string name="verify">Verify</string>
+    <string name="new_connection">New Connection</string>
+    <string name="share_code">Share Code</string>
 </resources>

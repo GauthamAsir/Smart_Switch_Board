@@ -11,18 +11,114 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/wificonfig"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="end|center"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/_24dp"
-        app:elevation="12dp"
-        app:fabSize="auto"
-        android:src="@drawable/wifi_config"
-        app:tint="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        android:tooltipText="@string/config_wifi"/>
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/new_connection_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_6dp"
+                app:cardElevation="@dimen/_6dp"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:id="@+id/fab3_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_6dp"
+                    android:text="@string/new_connection"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold" />
+
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/new_connection"
+                android:layout_width="@dimen/_40dp"
+                android:layout_height="@dimen/_40dp"
+                android:layout_gravity="bottom|end|center_vertical"
+                android:layout_marginStart="@dimen/_24dp"
+                android:layout_marginTop="@dimen/_6dp"
+                android:layout_marginEnd="@dimen/_16dp"
+                android:layout_marginBottom="@dimen/_6dp"
+                android:contentDescription="@string/share_code"
+                android:scaleType="centerCrop"
+                android:src="@drawable/wifi_config"
+                android:tint="@color/colorPrimary" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/share_code_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackground"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_6dp"
+                app:cardElevation="@dimen/_6dp"
+                app:cardUseCompatPadding="true">
+
+                <TextView
+                    android:id="@+id/fab2_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_6dp"
+                    android:text="@string/share_code"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold" />
+
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/share_code"
+                android:layout_width="@dimen/_40dp"
+                android:layout_height="@dimen/_40dp"
+                android:layout_gravity="bottom|end|center_vertical"
+                android:layout_marginStart="@dimen/_24dp"
+                android:layout_marginTop="@dimen/_6dp"
+                android:layout_marginEnd="@dimen/_24dp"
+                android:layout_marginBottom="@dimen/_6dp"
+                android:contentDescription="@string/share_code"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_share_24"
+                android:tint="@color/colorPrimary" />
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/wificonfig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_24dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="@dimen/_6dp"
+            android:src="@drawable/ic_round_add_24"
+            app:borderWidth="@dimen/_0dp"
+            app:elevation="@dimen/_12dp"
+            app:fabSize="auto"
+            app:tint="@android:color/white" />
+
+    </LinearLayout>
 
 </RelativeLayout>

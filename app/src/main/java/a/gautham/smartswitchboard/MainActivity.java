@@ -5,9 +5,12 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
+    private boolean isFABOpen = false;
+    private FloatingActionButton fab;
+    private Animation fab_open, fab_close, rotate_forward, rotate_backward;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         getAccountInfo();
+
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
+
     }
 
     @Override
@@ -44,9 +56,24 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         binding.wificonfig.setOnClickListener(view -> {
-
+            animateFAB();
         });
 
+    }
+
+    public void animateFAB() {
+
+        if (isFABOpen) {
+            binding.wificonfig.startAnimation(rotate_backward);
+            binding.newConnectionContainer.startAnimation(fab_close);
+            binding.shareCodeContainer.startAnimation(fab_close);
+            isFABOpen = false;
+        } else {
+            binding.wificonfig.startAnimation(rotate_forward);
+            binding.newConnectionContainer.startAnimation(fab_open);
+            binding.shareCodeContainer.startAnimation(fab_open);
+            isFABOpen = true;
+        }
     }
 
     private void getAccountInfo() {
