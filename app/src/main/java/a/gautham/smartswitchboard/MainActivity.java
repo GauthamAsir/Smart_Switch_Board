@@ -1,9 +1,12 @@
 package a.gautham.smartswitchboard;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -35,8 +38,10 @@ import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.models.CurrentDevice;
 import a.gautham.smartswitchboard.navigation.Home;
 import a.gautham.smartswitchboard.navigation.Settings;
+import dmax.dialog.SpotsDialog;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
@@ -155,6 +160,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Settings()).commit();
                 Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_settings);
+                break;
+            case R.id.nav_logout:
+
+                android.app.AlertDialog alertDialog = new SpotsDialog.Builder()
+                        .setContext(this)
+                        .setCancelable(false)
+                        .setMessage("Logging out...")
+                        .setTheme(R.style.DialogCustom)
+                        .build();
+
+                alertDialog.show();
+
+                FirebaseAuth.getInstance().signOut();
+                SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                preferences.edit().clear().apply();
+                Common.uid = "default";
+                Common.PHONE_NUMBER = "default";
+                Common.EMAIL = "default";
+                Common.NAME = "default";
+
+                new Handler().postDelayed(() -> startActivity(new Intent(getApplicationContext(), Login.class)), 1000);
                 break;
         }
 
