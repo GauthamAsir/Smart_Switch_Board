@@ -66,6 +66,7 @@ public class Login extends AppCompatActivity {
             FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
                     .addOnCompleteListener(task -> {
                        if (task.isSuccessful()){
+                           Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                            if (dialog.isShowing())
                                dialog.dismiss();
                            startActivity(new Intent(getApplicationContext(),MainActivity.class));

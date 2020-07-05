@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
@@ -170,7 +171,7 @@ public class Register extends AppCompatActivity {
 
                 requestOpt.show();
 
-                DocumentReference docRef = firestore.collection("Users").document(getPhoneNumber());
+                DocumentReference docRef = firestore.collection("Phones").document(getPhoneNumber());
 
                 if (!Common.checkInternet(getApplicationContext())){
                     Common.toastShort(getApplicationContext(), "No Internet Connection", Color.RED,Color.WHITE);
@@ -499,14 +500,22 @@ public class Register extends AppCompatActivity {
                        Map<String, Object> userMap = new HashMap<>();
                        userMap.put("name", name);
                        userMap.put("email", email);
-                       userMap.put("password",pass);
-                       userMap.put("phone_number",pno);
+                       userMap.put("password", pass);
+                       userMap.put("phone_number", pno);
                        userMap.put("created_date", createdDate);
                        userMap.put("created_device_info", createdDeviceInfo);
                        userMap.put("current_device", currentDeviceMap);
 
+                       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                       Map<String, String> map = new HashMap<>();
+                       map.put("uid", Objects.requireNonNull(user).getUid());
+                       userMap.put("uid", Objects.requireNonNull(user).getUid());
+
+                       firestore.collection("Phones").document(pno).set(map);
+
                        firestore.collection("Users")
-                               .document(pno)
+                               .document(Objects.requireNonNull(user).getUid())
                                .set(userMap)
                                .addOnCompleteListener(task2 -> {
 
@@ -516,7 +525,8 @@ public class Register extends AppCompatActivity {
                                        dialog.dismiss();
 
                                   if (task2.isSuccessful()){
-                                      Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN,Color.WHITE);
+                                      Common.uid = user.getUid();
+                                      Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN, Color.WHITE);
                                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                       finish();
                                   }else {

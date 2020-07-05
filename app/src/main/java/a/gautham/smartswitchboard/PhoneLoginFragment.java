@@ -86,7 +86,7 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
                 loading(true);
                 setLoadingInfo("Connecting to database");
 
-                DocumentReference docRef = fireStore.collection("Users").document(getPhone());
+                DocumentReference docRef = fireStore.collection("Phones").document(getPhone());
 
                 if (!Common.checkInternet(Objects.requireNonNull(getActivity()))){
                     Common.toastShort(getActivity(), "No Internet Connection", Color.RED,Color.WHITE);
@@ -182,12 +182,34 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
 
     private void signinwithCredential(PhoneAuthCredential credential){
         auth.signInWithCredential(credential).addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
+            if (task.isSuccessful()) {
 
                 setLoadingInfo("Logging in");
 
-                startActivity(new Intent(getActivity(), MainActivity.class));
-                Objects.requireNonNull(getActivity()).finish();
+                FirebaseFirestore.getInstance().collection("Phones")
+                        .document(getPhone()).addSnapshotListener((documentSnapshot, e) -> {
+                    if (documentSnapshot != null) {
+
+                        setLoadingInfo("Getting Account Details");
+
+                        if (documentSnapshot.exists()) {
+
+                            Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
+
+                            startActivity(new Intent(getActivity(), MainActivity.class));
+                            Objects.requireNonNull(getActivity()).finish();
+
+                        } else {
+                            loading(false);
+                            Common.toastShort(getActivity(), "Login failed", Color.RED, Color.WHITE);
+                        }
+
+                    } else {
+                        loading(false);
+                        Common.toastShort(getActivity(), "Login failed", Color.RED, Color.WHITE);
+                    }
+                });
+
             }else {
                 Common.toastShort(getActivity(),"Otp verification failed", Color.RED, Color.WHITE);
                 Log.e("Login Otp", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));

@@ -3,7 +3,6 @@ package a.gautham.smartswitchboard;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.LayoutInflater;
@@ -15,7 +14,12 @@ import androidx.cardview.widget.CardView;
 
 public class Common {
 
-    public static boolean checkInternet(Context context){
+    public static String PHONE_NUMBER = "default";
+    public static String EMAIL = "default";
+    public static String uid = "default";
+    public static String NAME = "default";
+
+    public static boolean checkInternet(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
