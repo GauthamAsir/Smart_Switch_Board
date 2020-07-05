@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -43,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         window.setStatusBarColor(getResources().getColor(R.color.overlayBackground));
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        getSupportActionBar().setTitle(R.string.menu_home);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
 
         binding.navView.setNavigationItemSelectedListener(this);
 
@@ -106,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
                         Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
 
+                        View headerView = binding.navView.getHeaderView(0);
+                        final TextView t1 = headerView.findViewById(R.id.header_txt);
+                        t1.setText(String.format(Locale.getDefault(), "Hello, %s", Common.NAME));
+
                         currentDeviceMap = (Map<String, List<CurrentDevice>>) document.get("current_device");
 
                         Date d = new Date();
@@ -146,11 +150,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.nav_home:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
-                getSupportActionBar().setTitle(R.string.menu_home);
+                Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
                 break;
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Settings()).commit();
-                getSupportActionBar().setTitle(R.string.menu_settings);
+                Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_settings);
                 break;
         }
 
