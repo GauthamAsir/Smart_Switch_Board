@@ -30,12 +30,11 @@ public class SettingsActivity extends AppCompatActivity {
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
         Toolbar toolBar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolBar);
+        toolBar.setTitle(R.string.menu_settings);
+        toolBar.setNavigationOnClickListener(view -> onBackPressed());
 
         Window window = getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.overlayBackground));
-
-        toolBar.setNavigationOnClickListener(view -> onBackPressed());
 
     }
 
