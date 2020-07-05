@@ -196,6 +196,7 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
 
                             Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
 
+                            Common.toastShort(getActivity(), "Login successful", Color.GREEN, Color.BLACK);
                             startActivity(new Intent(getActivity(), MainActivity.class));
                             Objects.requireNonNull(getActivity()).finish();
 

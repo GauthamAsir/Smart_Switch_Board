@@ -1,6 +1,5 @@
 package a.gautham.smartswitchboard;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -420,11 +419,8 @@ public class Register extends AppCompatActivity {
         alertDialog.setView(adCode); //Adding Editext To Alert Dialog
         alertDialog.setCancelable(false);
 
-        alertDialog.setPositiveButton("Verify", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+        alertDialog.setPositiveButton("Verify", (dialogInterface, i) -> {
 
-            }
         });
         alertDialog.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
 
@@ -526,7 +522,7 @@ public class Register extends AppCompatActivity {
 
                                   if (task2.isSuccessful()){
                                       Common.uid = user.getUid();
-                                      Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN, Color.WHITE);
+                                      Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN, Color.BLACK);
                                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                       finish();
                                   }else {
