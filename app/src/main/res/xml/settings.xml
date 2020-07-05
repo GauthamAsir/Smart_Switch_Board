@@ -1,0 +1,68 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:initialExpandedChildrenCount="4">
+
+    <PreferenceCategory app:title="@string/account">
+
+        <EditTextPreference
+            app:icon="@drawable/ic_round_person_outline_24"
+            app:key="name"
+            app:title="@string/name"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:icon="@drawable/ic_outline_color_lens_24"
+            app:key="themes"
+            app:title="@string/themes"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:icon="@drawable/ic_outline_lock_24"
+            app:key="change_pass"
+            app:title="@string/change_password" />
+
+        <Preference
+            app:icon="@drawable/ic_round_delete_outline_24"
+            app:key="delete_account"
+            app:title="@string/delete_account" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/misc">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:icon="@drawable/ic_round_update_24"
+            app:key="check_update"
+            app:summaryOff="@string/check_updates_automatically"
+            app:summaryOn="@string/notifies_new_update"
+            app:title="@string/auto_update_check" />
+
+        <Preference
+            app:icon="@drawable/ic_outline_info_24"
+            app:key="about_us"
+            app:title="@string/about_us" />
+
+        <Preference
+            app:icon="@drawable/ic_baseline_share_24"
+            app:key="share_app"
+            app:title="@string/share_our_work" />
+
+        <Preference
+            app:icon="@drawable/ic_outline_contact_support_24"
+            app:key="contact_support"
+            app:title="@string/contact_support" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/report">
+
+        <Preference
+            app:icon="@drawable/ic_outline_bug_report_24"
+            app:key="report_bug"
+            app:title="@string/report_bug" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

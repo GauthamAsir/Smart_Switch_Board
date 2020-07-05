@@ -33,4 +33,25 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="log_out">Log out</string>
     <string name="misc">Misc</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Setting Preferences -->
+    <string name="account">Account</string>
+    <string name="themes">Themes</string>
+
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="change_password">Change Password</string>
+    <string name="auto_update_check">Auto Update Check</string>
+    <string name="check_updates_automatically">Turn on to check updates automatically</string>
+    <string name="notifies_new_update">Notifies when new updates are available</string>
+    <string name="about_us">About Us</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="report">Report</string>
+    <string name="report_bug">Report Bug</string>
+    <string name="share_our_work">Share our work</string>
 </resources>

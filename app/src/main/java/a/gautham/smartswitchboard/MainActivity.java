@@ -37,7 +37,7 @@ import java.util.Objects;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.models.CurrentDevice;
 import a.gautham.smartswitchboard.navigation.Home;
-import a.gautham.smartswitchboard.navigation.Settings;
+import a.gautham.smartswitchboard.navigation.SettingsActivity;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
                 Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
                 break;
             case R.id.nav_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Settings()).commit();
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_settings);
                 break;
             case R.id.nav_logout:
