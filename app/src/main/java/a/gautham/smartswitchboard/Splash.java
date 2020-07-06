@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class Splash extends AppCompatActivity {
 
@@ -19,6 +20,20 @@ public class Splash extends AppCompatActivity {
 
         SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
         String uid = preferences.getString("uid", "default");
+        int theme = preferences.getInt("theme", 0);
+
+        switch (theme) {
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
 
         if (uid == null || uid.equals("default")) {
             handler.postDelayed(() -> {

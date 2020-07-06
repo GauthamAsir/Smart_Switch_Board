@@ -2,6 +2,8 @@ package a.gautham.smartswitchboard.navigation;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Window;
@@ -107,6 +109,10 @@ public class SettingsActivity extends AppCompatActivity {
                             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                             break;
                     }
+
+                    SharedPreferences preferences = requireActivity()
+                            .getSharedPreferences("User", Context.MODE_PRIVATE);
+                    preferences.edit().putInt("theme", AppCompatDelegate.getDefaultNightMode()).apply();
 
                     return true;
                 });

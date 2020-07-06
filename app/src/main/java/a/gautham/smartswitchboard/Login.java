@@ -12,6 +12,7 @@ import android.util.Patterns;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -39,6 +40,9 @@ public class Login extends AppCompatActivity {
                 .setMessage("Logging You In ...")
                 .setTheme(R.style.DialogCustom)
                 .build();
+
+        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+        preferences.edit().putInt("theme", AppCompatDelegate.getDefaultNightMode()).apply();
 
         binding.register.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), Register.class));
