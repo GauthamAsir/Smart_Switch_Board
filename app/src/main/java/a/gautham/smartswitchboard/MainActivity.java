@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -57,7 +58,10 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         Window window = getWindow();
-        window.setStatusBarColor(getResources().getColor(R.color.overlayBackground));
+        TypedValue typedValue = new TypedValue();
+        getApplicationContext().getTheme()
+                .resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        window.setStatusBarColor(typedValue.data);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);

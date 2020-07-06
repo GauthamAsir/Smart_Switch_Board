@@ -6,21 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/overlayBackground"
+        android:layout_height="?attr/actionBarSize"
         android:elevation="@dimen/_0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:elevation="@dimen/_0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <FrameLayout
         android:id="@+id/fragment_container"

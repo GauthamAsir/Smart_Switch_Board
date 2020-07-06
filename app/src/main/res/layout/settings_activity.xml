@@ -4,18 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:title="@string/menu_settings"
-            app:navigationIcon="?attr/homeAsUpIndicator" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="?actionBarSize"
+        android:title="@string/menu_settings"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
 
     <FrameLayout
         android:id="@+id/settings"

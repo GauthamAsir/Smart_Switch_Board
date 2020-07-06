@@ -3,6 +3,7 @@ package a.gautham.smartswitchboard.navigation;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +35,10 @@ public class SettingsActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(view -> onBackPressed());
 
         Window window = getWindow();
-        window.setStatusBarColor(getResources().getColor(R.color.overlayBackground));
+        TypedValue typedValue = new TypedValue();
+        getApplicationContext().getTheme()
+                .resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        window.setStatusBarColor(typedValue.data);
 
     }
 
