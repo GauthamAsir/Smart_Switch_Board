@@ -62,4 +62,7 @@
     <string name="new_password">New Password</string>
     <string name="old_password">Old Password</string>
     <string name="change">Change</string>
+    <string name="switch_">Switch</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="not_connected_to_ssb">Not connected to any SSB</string>
 </resources>
