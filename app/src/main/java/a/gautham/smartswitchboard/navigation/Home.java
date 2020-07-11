@@ -1,5 +1,6 @@
 package a.gautham.smartswitchboard.navigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.yashhajare.ssb_connect.MainActivitySSB;
 
 import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.databinding.NavigationHomeBinding;
@@ -30,6 +33,10 @@ public class Home extends Fragment {
         rotate_forward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_backward);
 
+        binding.newConnectionContainer.setOnClickListener(view -> {
+            startActivity(new Intent(getActivity(), MainActivitySSB.class));
+        });
+
         return binding.getRoot();
     }
 
@@ -37,6 +44,8 @@ public class Home extends Fragment {
     public void onStart() {
         super.onStart();
         binding.wificonfig.setOnClickListener(view -> animateFAB());
+
+
     }
 
     private void animateFAB() {

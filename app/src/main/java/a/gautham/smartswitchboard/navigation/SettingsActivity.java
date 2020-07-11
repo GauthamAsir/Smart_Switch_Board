@@ -18,6 +18,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import a.gautham.smartswitchboard.ChangePasswordFragment;
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.DeleteAccountFragment;
 import a.gautham.smartswitchboard.R;
@@ -122,7 +123,9 @@ public class SettingsActivity extends AppCompatActivity {
             Preference change_pass = findPreference("change_pass");
             if (change_pass != null) {
                 change_pass.setOnPreferenceClickListener(preference -> {
-                    Common.toastShort(getContext(), "TODO", 0, 0);
+                    ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
+                    changePasswordFragment.show(
+                            requireActivity().getSupportFragmentManager(), changePasswordFragment.getTag());
                     return true;
                 });
             }

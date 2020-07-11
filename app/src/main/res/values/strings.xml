@@ -55,4 +55,10 @@
     <string name="report_bug">Report Bug</string>
     <string name="share_our_work">Share our work</string>
     <string name="enter_password_to_continue">Enter Password to continue</string>
+    <string name="enter_e_mail_to_continue">Enter e-mail to continue</string>
+    <string name="try_another_way">Try another way</string>
+    <string name="enter_phone_number_to_continue">Enter Phone number to continue</string>
+    <string name="enter_new_password">Enter New Password</string>
+    <string name="new_password">New Password</string>
+    <string name="old_password">Old Password</string>
 </resources>

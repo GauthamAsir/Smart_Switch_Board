@@ -22,7 +22,7 @@
             app:counterMaxLength="10"
             app:errorEnabled="true"
             app:hintEnabled="true"
-            android:nextFocusDown="@id/signInPass"
+            android:nextFocusDown="@id/login_phone_dialog"
             android:layout_marginStart="@dimen/_24dp"
             android:layout_marginEnd="@dimen/_24dp"
             android:layout_marginTop="@dimen/_12dp"
