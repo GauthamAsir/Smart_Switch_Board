@@ -134,7 +134,6 @@ public class SettingsActivity extends AppCompatActivity {
             if (delete_acc != null) {
                 delete_acc.setOnPreferenceClickListener(preference -> {
                     DeleteAccountFragment deleteAccountFragment = new DeleteAccountFragment();
-                    deleteAccountFragment.setCancelable(false);
                     deleteAccountFragment.show(getChildFragmentManager(), deleteAccountFragment.getTag());
                     return true;
                 });

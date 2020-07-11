@@ -49,6 +49,7 @@
             android:layout_height="wrap_content"
             android:text="@string/delete_account"
             android:textAllCaps="false"
+            android:textColor="@android:color/white"
             android:textAppearance="?android:textAppearanceLarge" />
 
     </LinearLayout>
