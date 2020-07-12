@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
+    private long back_pressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,4 +207,32 @@ public class MainActivity extends AppCompatActivity implements
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+
+        //Snackbar
+        Snackbar snackbar = Snackbar.make(binding.drawerLayout, "Press Again to Exit", Snackbar.LENGTH_SHORT);
+
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (!binding.navView.getMenu().findItem(R.id.nav_home).isChecked()) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
+            binding.navView.setCheckedItem(R.id.nav_home);
+            Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
+        } else {
+            if (back_pressed + 2000 > System.currentTimeMillis()) {
+                finish();
+                moveTaskToBack(true);
+                System.exit(1);
+                android.os.Process.killProcess(android.os.Process.myPid());
+                finish();
+            } else {
+                snackbar.setText("Press Again to Exit");
+                snackbar.show();
+                back_pressed = System.currentTimeMillis();
+            }
+        }
+    }
+
 }
