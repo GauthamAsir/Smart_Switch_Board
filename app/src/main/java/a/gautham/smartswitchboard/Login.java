@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,6 +30,8 @@ public class Login extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private boolean validateEmail = false, validatePass = false;
     private android.app.AlertDialog dialog;
+
+    private long back_pressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,4 +182,22 @@ public class Login extends AppCompatActivity {
         return Objects.requireNonNull(binding.signInPass.getEditText()).getText().toString();
     }
 
+    @Override
+    public void onBackPressed() {
+
+        //SnackBar
+        Snackbar snackbar = Snackbar.make(binding.root, "Press Again to Exit", Snackbar.LENGTH_SHORT);
+
+        if (back_pressed + 2000 > System.currentTimeMillis()) {
+            finish();
+            moveTaskToBack(true);
+            System.exit(1);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            finish();
+        } else {
+            snackbar.setText("Press Again to Exit");
+            snackbar.show();
+            back_pressed = System.currentTimeMillis();
+        }
+    }
 }
