@@ -10,10 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.Objects;
 
 public class Splash extends AppCompatActivity {
 
@@ -42,34 +38,20 @@ public class Splash extends AppCompatActivity {
         }
 
         if (uid == null || uid.equals("default") || FirebaseAuth.getInstance().getCurrentUser() == null) {
-            loginScreen();
+            handler.postDelayed(() -> {
+                startActivity(new Intent(getApplicationContext(), Login.class));
+                finish();
+            }, 500);
             return;
         }
 
-        FirebaseFirestore.getInstance().collection("Users")
-                .whereEqualTo(FieldPath.documentId(), uid)
-                .get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                if (Objects.requireNonNull(task.getResult()).getDocuments().size() <= 0) {
-                    loginScreen();
-                } else {
-                    Common.uid = uid;
+        Common.uid = uid;
 
-                    handler.postDelayed(() -> {
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
-                    }, 500);
-                }
-            }
-        });
-
-    }
-
-    private void loginScreen() {
         handler.postDelayed(() -> {
-            startActivity(new Intent(getApplicationContext(), Login.class));
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
         }, 500);
+
     }
 
 }
