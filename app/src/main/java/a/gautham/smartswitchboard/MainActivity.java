@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import a.gautham.library.AppUpdater;
+import a.gautham.library.helper.Display;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.models.CurrentDevice;
 import a.gautham.smartswitchboard.navigation.Home;
@@ -76,6 +79,15 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
             binding.navView.setCheckedItem(R.id.nav_home);
+        }
+
+        boolean checkUpdate = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext()).getBoolean("check_update", true);
+        if (checkUpdate) {
+            AppUpdater appUpdater = new AppUpdater(this);
+            appUpdater.setDisplay(Display.DIALOG);
+            appUpdater.setUpGithub("GauthamAsir", "Smart_Switch_Board");
+            appUpdater.start();
         }
 
         getAccountInfo();
