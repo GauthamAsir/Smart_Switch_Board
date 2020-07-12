@@ -3,6 +3,7 @@ package a.gautham.smartswitchboard.navigation;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -22,6 +23,7 @@ import a.gautham.smartswitchboard.ChangePasswordFragment;
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.DeleteAccountFragment;
 import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.ReportBug;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -135,6 +137,14 @@ public class SettingsActivity extends AppCompatActivity {
                 delete_acc.setOnPreferenceClickListener(preference -> {
                     DeleteAccountFragment deleteAccountFragment = new DeleteAccountFragment();
                     deleteAccountFragment.show(getChildFragmentManager(), deleteAccountFragment.getTag());
+                    return true;
+                });
+            }
+
+            Preference report_bug = findPreference("report_bug");
+            if (report_bug != null) {
+                report_bug.setOnPreferenceClickListener(preference -> {
+                    requireActivity().startActivity(new Intent(requireActivity(), ReportBug.class));
                     return true;
                 });
             }

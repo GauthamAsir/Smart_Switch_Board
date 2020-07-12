@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReportBug">
+
+    <EditText
+        android:id="@+id/problem_bug_description"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_150dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/_24dp"
+        android:background="@drawable/edit_text_background"
+        android:gravity="top"
+        android:hint="@string/describe_your_problem_bug"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:padding="@dimen/_12dp" />
+
+    <TextView
+        android:id="@+id/header1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/problem_bug_description"
+        android:layout_marginStart="@dimen/_24dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginEnd="@dimen/_24dp"
+        android:text="@string/add_screenshots_optional"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@color/colorAccent" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/_24dp"
+        android:layout_marginEnd="@dimen/_24dp"
+        android:text="@string/next"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>

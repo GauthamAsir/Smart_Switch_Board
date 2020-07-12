@@ -66,4 +66,6 @@
     <string name="togglebutton">ToggleButton</string>
     <string name="not_connected_to_ssb">Not connected to any SSB</string>
     <string name="enter_valid_otp">Enter valid otp</string>
+    <string name="describe_your_problem_bug">Describe your problem/bug</string>
+    <string name="add_screenshots_optional">Add Screenshots (optional)</string>
 </resources>
