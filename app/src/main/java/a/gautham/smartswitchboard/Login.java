@@ -15,7 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.Map;
 import java.util.Objects;
 
 import a.gautham.smartswitchboard.databinding.ActivityLoginBinding;
@@ -57,35 +60,54 @@ public class Login extends AppCompatActivity {
         textWatchers();
 
         binding.loginBt.setOnClickListener(view -> {
-            if (!validateEmail){
-                Common.toastShort(getApplicationContext(), "Enter valid email/phone number",Color.RED, Color.WHITE);
+            if (!validateEmail) {
+                Common.toastShort(getApplicationContext(), "Enter valid email/phone number", Color.RED, Color.WHITE);
                 return;
             }
 
-            if (!validatePass){
-                Common.toastShort(getApplicationContext(), "Enter valid password",Color.RED, Color.WHITE);
+            if (!validatePass) {
+                Common.toastShort(getApplicationContext(), "Enter valid password", Color.RED, Color.WHITE);
                 return;
             }
 
             dialog.show();
 
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
-                    .addOnCompleteListener(task -> {
-                       if (task.isSuccessful()) {
-                           SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                           preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
-                           Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-                           if (dialog.isShowing())
-                               dialog.dismiss();
-                           startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                           finish();
-                       }else {
-                           if (dialog.isShowing())
-                               dialog.dismiss();
-                           Common.toastShort(getApplicationContext(),Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()), Color.RED, Color.WHITE);
-                           Log.d("Login", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
-                       }
-                    });
+            FirebaseFirestore.getInstance().collection("Users")
+                    .get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    boolean contains = false;
+                    for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                        Map<String, Object> documentSnapshot = document.getData();
+                        if (documentSnapshot.containsValue(getEmail())) {
+                            contains = true;
+                            System.out.println("HEY HEY HEY HEY HEY HEY Contains");
+                            break;
+                        }
+                    }
+                    if (contains) {
+                        FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
+                                .addOnCompleteListener(task12 -> {
+                                    if (task12.isSuccessful()) {
+                                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                                        preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
+                                        Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                                        if (dialog.isShowing())
+                                            dialog.dismiss();
+                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        finish();
+                                    } else {
+                                        if (dialog.isShowing())
+                                            dialog.dismiss();
+                                        Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()), Color.RED, Color.WHITE);
+                                        Log.d("Login", Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()));
+                                    }
+                                });
+                    } else {
+                        Common.toastShort(getApplicationContext(), "No User Found", 0, 0);
+                        dialog.dismiss();
+                    }
+                }
+            });
 
         });
 
