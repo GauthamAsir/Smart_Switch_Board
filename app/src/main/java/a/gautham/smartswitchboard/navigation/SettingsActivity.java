@@ -20,6 +20,7 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,14 +53,31 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Common.SETTINGS_ENABLED = Common.getConnectivityStatus(getApplicationContext());
+    }
+
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @SuppressLint("SwitchIntDef")
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.settings, rootKey);
 
+            PreferenceScreen root = findPreference("root");
+            if (root != null) {
+                if (Common.SETTINGS_ENABLED) {
+                    root.setEnabled(true);
+                } else {
+                    Common.toastShort(requireActivity(), "Connect to internet to use this features", 0, 0);
+                    root.setEnabled(false);
+                }
+            }
+
             EditTextPreference namePref = findPreference("name");
             if (namePref != null) {
+
                 namePref.setText(Common.NAME);
 
                 namePref.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -158,7 +176,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (contact_support != null) {
                 contact_support.setOnPreferenceClickListener(preference -> {
                     BottomSheetDialog dialog = new BottomSheetDialog(requireActivity());
-                    View view = LayoutInflater.from(requireActivity()).inflate(R.layout.contact_support, null, false);
+                    @SuppressLint("InflateParams") View view = LayoutInflater.from(requireActivity())
+                            .inflate(R.layout.contact_support, null, false);
                     dialog.setContentView(view);
 
                     LinearLayout email = view.findViewById(R.id.email_container);

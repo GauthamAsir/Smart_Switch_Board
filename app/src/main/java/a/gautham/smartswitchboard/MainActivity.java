@@ -85,14 +85,28 @@ public class MainActivity extends AppCompatActivity implements
 
         boolean checkUpdate = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext()).getBoolean("check_update", true);
-        if (checkUpdate) {
-            AppUpdater appUpdater = new AppUpdater(this);
-            appUpdater.setDisplay(Display.DIALOG);
-            appUpdater.setUpGithub("GauthamAsir", "Smart_Switch_Board");
-            appUpdater.start();
-        }
 
-        getAccountInfo();
+        if (Common.getConnectivityStatus(getApplicationContext())) {
+            if (checkUpdate) {
+                AppUpdater appUpdater = new AppUpdater(this);
+                appUpdater.setDisplay(Display.DIALOG);
+                appUpdater.setUpGithub("GauthamAsir", "Smart_Switch_Board");
+                appUpdater.start();
+            }
+
+            getAccountInfo();
+        } else {
+            Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Common.SETTINGS_ENABLED = Common.getConnectivityStatus(getApplicationContext());
+        if (!Common.getConnectivityStatus(getApplicationContext())) {
+            Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
+        }
     }
 
     private void getAccountInfo() {

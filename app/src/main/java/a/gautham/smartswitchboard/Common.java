@@ -18,6 +18,7 @@ public class Common {
     public static String EMAIL = "default";
     public static String uid = "default";
     public static String NAME = "default";
+    public static boolean SETTINGS_ENABLED = false;
 
     public static boolean checkInternet(Context context) {
         ConnectivityManager cm =
@@ -74,6 +75,18 @@ public class Common {
         bg.setCardBackgroundColor(bgColor);
 
         toast.show();
+    }
+
+    public static boolean getConnectivityStatus(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+            } else return activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            return false;
+        }
     }
 
 }
