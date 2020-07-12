@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="?actionBarSize">
 
     <TextView
         android:id="@+id/message"
@@ -13,6 +14,11 @@
         android:gravity="center"
         android:text="@string/menu_home"
         android:textSize="@dimen/_42sp" />
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -120,13 +126,10 @@
             app:borderWidth="@dimen/_0dp"
             app:elevation="@dimen/_12dp"
             app:fabSize="auto"
+            android:clickable="true"
+            android:focusable="true"
             app:tint="@android:color/white" />
 
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </RelativeLayout>

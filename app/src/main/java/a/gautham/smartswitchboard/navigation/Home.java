@@ -44,6 +44,8 @@ public class Home extends Fragment {
         rotate_forward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_backward);
 
+        binding.wificonfig.setOnClickListener(view -> animateFAB());
+
         binding.newConnectionContainer.setOnClickListener(view -> {
             startActivity(new Intent(getActivity(), MainActivitySSB.class));
         });
@@ -81,13 +83,6 @@ public class Home extends Fragment {
         Type type = new TypeToken<ArrayList<String>>() {
         }.getType();
         return gson.fromJson(json, type);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        binding.wificonfig.setOnClickListener(view -> animateFAB());
-
     }
 
     private void animateFAB() {
