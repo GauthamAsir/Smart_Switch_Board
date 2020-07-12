@@ -65,4 +65,5 @@
     <string name="switch_">Switch</string>
     <string name="togglebutton">ToggleButton</string>
     <string name="not_connected_to_ssb">Not connected to any SSB</string>
+    <string name="enter_valid_otp">Enter valid otp</string>
 </resources>

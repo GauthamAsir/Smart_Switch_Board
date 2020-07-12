@@ -1,6 +1,7 @@
 package a.gautham.smartswitchboard;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,21 +23,59 @@ import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
     private LinearLayout oldPassContainer, newPassContainer, phoneContainer, optContainer,
             loadingContainer;
     private TextInputLayout oldPass, newPass, phoneInput;
+    private EditText optCode;
     private ImageView loadingImg;
     private TextView loadingInfo;
 
+    private String verificationId, uid, email;
+
     private Animation slideIn, slideOut, backSlideIn, backSlideOut;
+
+    private ListenerRegistration pass;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+            mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+            String code = phoneAuthCredential.getSmsCode();
+            if (code != null) {
+                verifyCode(code);
+            }
+        }
+
+        @Override
+        public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            verificationId = s;
+            out(loadingContainer);
+            in(optContainer);
+        }
+
+        @Override
+        public void onVerificationFailed(@NonNull FirebaseException e) {
+            loading(false);
+            Log.d("Phone Verification : ", Objects.requireNonNull(e.getMessage()));
+            Common.toastShort(requireActivity(), e.getMessage(), Color.RED, Color.WHITE);
+        }
+    };
 
     @Nullable
     @Override
@@ -49,9 +89,13 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         loadingContainer = root.findViewById(R.id.loading_container);
         oldPass = root.findViewById(R.id.oldPass);
         newPass = root.findViewById(R.id.newPass);
+        optCode = root.findViewById(R.id.optView);
         phoneInput = root.findViewById(R.id.phoneInput);
         loadingImg = root.findViewById(R.id.loading);
         loadingInfo = root.findViewById(R.id.info);
+
+        uid = FirebaseAuth.getInstance().getUid();
+        email = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
 
         slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right);
         slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_left);
@@ -73,8 +117,22 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
             oldPass.setError(null);
 
-            out(oldPassContainer);
-            in(newPassContainer);
+            loading(true);
+            setLoadingInfo("Verifying Credentials");
+
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(Objects.requireNonNull(
+                    Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail()), getOldPass())
+                    .addOnCompleteListener(task -> {
+
+                        if (task.isSuccessful()) {
+                            out(loadingContainer);
+                            in(newPassContainer);
+                        } else {
+                            loading(false);
+                            Common.toastShort(requireActivity(), "Wrong Password", 0, 0);
+                        }
+
+                    });
 
         });
 
@@ -90,29 +148,7 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                 return;
             }
             newPass.setError(null);
-
-            loading(true);
-
-            try {
-                Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser())
-                        .updatePassword(getNewPass()).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Common.toastShort(getActivity(), "Password Updated, Re-Login",
-                                0, 0);
-                        FirebaseAuth.getInstance().signOut();
-                        loading(false);
-                        startActivity(new Intent(getActivity(), Login.class));
-                        requireActivity().finish();
-                    } else {
-                        loading(false);
-                        Common.toastShort(getActivity(), "Failed to change password",
-                                0, 0);
-                    }
-                });
-            } catch (Exception e) {
-                loading(false);
-                Log.e("Change Password Error: ", e.toString());
-            }
+            changePass();
 
         });
 
@@ -132,6 +168,33 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         backPhone.setOnClickListener(view -> {
             back_out(phoneContainer);
             back_in(oldPassContainer);
+        });
+
+        Button phoneNext = root.findViewById(R.id.next_phone);
+
+        phoneNext.setOnClickListener(view -> {
+            if (getPhone().trim().length() != 10) {
+                phoneInput.setError(getString(R.string.enter_valid_number));
+                return;
+            }
+
+            phoneInput.setError(null);
+            loading(true);
+            setLoadingInfo("Verifying");
+            setLoadingInfo("Requesting Otp");
+            sendVerificationCode("+91" + getPhone());
+
+        });
+
+        Button verify = root.findViewById(R.id.verify);
+        verify.setOnClickListener(view -> {
+            if (getCode().trim().length() != 6) {
+                optCode.setError(getString(R.string.enter_valid_otp));
+                return;
+            }
+            optCode.setError(null);
+            verifyCode(getCode().trim());
+
         });
 
         return root;
@@ -155,6 +218,69 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
     private void back_out(LinearLayout l1) {
         l1.startAnimation(backSlideOut);
         l1.setVisibility(View.GONE);
+    }
+
+    private void changePass() {
+
+        if (pass != null)
+            loading(true);
+        setLoadingInfo("Changing Password");
+
+        try {
+            Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser())
+                    .updatePassword(getNewPass()).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FirebaseFirestore.getInstance().collection("Users")
+                            .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .update("password", getNewPass());
+                    if (email != null) {
+                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, getNewPass())
+                                .addOnCompleteListener(task1 -> {
+                                    if (task.isSuccessful()) {
+                                        Common.toastShort(getActivity(), "Password Updated", 0, 0);
+                                        dismiss();
+                                    } else {
+                                        Log.d("Error", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
+                                        startActivity(new Intent(requireActivity(), Login.class));
+                                        requireActivity().finish();
+                                        Common.toastShort(getActivity(), "Password Updated, Re-Login",
+                                                0, 0);
+                                    }
+                                });
+                    } else {
+                        Log.d("Error", "E-mail is null");
+                        Common.toastShort(getActivity(), "Failed to update password",
+                                0, 0);
+                    }
+                } else {
+                    loading(false);
+                    Log.e("Change Password HEY: ", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
+                    Common.toastShort(getActivity(), Objects.requireNonNull(task.getException().getMessage()),
+                            0, 0);
+                }
+            });
+        } catch (Exception e) {
+            loading(false);
+            Log.e("Change Password Error: ", e.toString());
+            Common.toastShort(getActivity(), e.getMessage(), 0, 0);
+        }
+
+    }
+
+    private void setLoadingInfo(String text) {
+        loadingInfo.setText(text);
+    }
+
+    private String getOldPass() {
+        return Objects.requireNonNull(oldPass.getEditText()).getText().toString();
+    }
+
+    private String getNewPass() {
+        return Objects.requireNonNull(newPass.getEditText()).getText().toString();
+    }
+
+    private String getPhone() {
+        return Objects.requireNonNull(phoneInput.getEditText()).getText().toString();
     }
 
     private void loading(boolean value) {
@@ -183,27 +309,61 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         }
 
         oldPassContainer.setVisibility(View.VISIBLE);
-        newPassContainer.setVisibility(View.VISIBLE);
-        phoneContainer.setVisibility(View.VISIBLE);
-        optContainer.setVisibility(View.VISIBLE);
+        newPassContainer.setVisibility(View.GONE);
+        phoneContainer.setVisibility(View.GONE);
+        optContainer.setVisibility(View.GONE);
         loadingContainer.setVisibility(View.GONE);
 
     }
 
-    private void setLoadingInfo(String text) {
-        loadingInfo.setText(text);
+    private String getCode() {
+        return optCode.getText().toString();
     }
 
-    private String getOldPass() {
-        return Objects.requireNonNull(oldPass.getEditText()).getText().toString();
+    private void sendVerificationCode(String number) {
+
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallBack
+        );
     }
 
-    private String getNewPass() {
-        return Objects.requireNonNull(newPass.getEditText()).getText().toString();
+    private void verifyCode(String code) {
+        loading(true);
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+        signInWithCredential(credential);
     }
 
-    private String getPhone() {
-        return Objects.requireNonNull(phoneInput.getEditText()).getText().toString();
+    private void signInWithCredential(PhoneAuthCredential credential) {
+        FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(task -> {
+
+            DocumentReference docRef = FirebaseFirestore.getInstance()
+                    .collection("Users").document(uid);
+
+            pass = docRef.addSnapshotListener((documentSnapshot, e) -> {
+                if (documentSnapshot != null) {
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(Objects.requireNonNull(documentSnapshot.get("email")).toString(),
+                            Objects.requireNonNull(documentSnapshot.get("password")).toString())
+                            .addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    out(loadingContainer);
+                                    in(newPassContainer);
+                                } else {
+                                    pass.remove();
+                                    loading(false);
+                                    Common.toastShort(requireActivity(), "Phone verification failed", 0, 0);
+                                }
+                            });
+
+                } else {
+                    loading(false);
+                    Common.toastShort(requireActivity(), "Phone verification failed", 0, 0);
+                }
+            });
+        });
     }
 
 }

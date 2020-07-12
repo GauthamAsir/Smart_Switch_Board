@@ -9,6 +9,8 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class Splash extends AppCompatActivity {
 
     Handler handler = new Handler();
@@ -35,7 +37,7 @@ public class Splash extends AppCompatActivity {
                 break;
         }
 
-        if (uid == null || uid.equals("default")) {
+        if (uid == null || uid.equals("default") || FirebaseAuth.getInstance().getCurrentUser() == null) {
             handler.postDelayed(() -> {
                 startActivity(new Intent(getApplicationContext(), Login.class));
                 finish();
