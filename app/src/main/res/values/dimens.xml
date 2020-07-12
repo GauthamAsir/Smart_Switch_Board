@@ -14,4 +14,6 @@
     <dimen name="_150dp">150dp</dimen>
     <dimen name="_8dp">8dp</dimen>
     <dimen name="_180dp">180dp</dimen>
+    <dimen name="_60dp">60dp</dimen>
+    <dimen name="_30dp">30dp</dimen>
 </resources>

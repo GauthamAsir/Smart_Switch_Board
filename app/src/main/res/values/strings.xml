@@ -68,4 +68,8 @@
     <string name="enter_valid_otp">Enter valid otp</string>
     <string name="describe_your_problem_bug">Describe your problem/bug</string>
     <string name="add_screenshots_optional">Add Screenshots (optional)</string>
+    <string name="contact_us_via">Contact us via</string>
+    <string name="support_mail">yash8hajare@gmail.com</string>
+    <string name="phone">Phone</string>
+    <string name="support_phone">8291881038</string>
 </resources>

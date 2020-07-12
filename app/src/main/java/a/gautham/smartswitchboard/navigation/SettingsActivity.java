@@ -5,9 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -17,6 +21,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import a.gautham.smartswitchboard.ChangePasswordFragment;
@@ -145,6 +150,36 @@ public class SettingsActivity extends AppCompatActivity {
             if (report_bug != null) {
                 report_bug.setOnPreferenceClickListener(preference -> {
                     requireActivity().startActivity(new Intent(requireActivity(), ReportBug.class));
+                    return true;
+                });
+            }
+
+            Preference contact_support = findPreference("contact_support");
+            if (contact_support != null) {
+                contact_support.setOnPreferenceClickListener(preference -> {
+                    BottomSheetDialog dialog = new BottomSheetDialog(requireActivity());
+                    View view = LayoutInflater.from(requireActivity()).inflate(R.layout.contact_support, null, false);
+                    dialog.setContentView(view);
+
+                    LinearLayout email = view.findViewById(R.id.email_container);
+                    LinearLayout phone = view.findViewById(R.id.phone_container);
+
+                    email.setOnClickListener(view1 -> {
+                        Intent intent = new Intent(android.content.Intent.ACTION_SENDTO,
+                                Uri.fromParts("mailto", getString(R.string.support_mail), null));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Smart Switch Board Support");
+                        startActivity(Intent.createChooser(intent, "Send email..."));
+                        dialog.dismiss();
+                    });
+
+                    phone.setOnClickListener(view1 -> {
+                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                        intent.setData(Uri.parse("tel:+91" + getString(R.string.support_phone)));
+                        startActivity(Intent.createChooser(intent, "Call via"));
+                        dialog.dismiss();
+                    });
+
+                    dialog.show();
                     return true;
                 });
             }
