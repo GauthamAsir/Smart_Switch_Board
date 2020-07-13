@@ -31,13 +31,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class ChangePasswordFragment extends BottomSheetDialogFragment {
+
+    private boolean forgotPass;
+    private ListenerRegistration passRegister;
 
     private LinearLayout oldPassContainer, newPassContainer, phoneContainer, optContainer,
             loadingContainer;
@@ -50,7 +55,10 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
     private Animation slideIn, slideOut, backSlideIn, backSlideOut;
 
-    private ListenerRegistration pass;
+    public ChangePasswordFragment(boolean forgotPass) {
+        this.forgotPass = forgotPass;
+    }
+
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks
             mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
@@ -94,14 +102,21 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         loadingImg = root.findViewById(R.id.loading);
         loadingInfo = root.findViewById(R.id.info);
 
-        uid = FirebaseAuth.getInstance().getUid();
-        email = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
+        getEmail();
 
         slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right);
         slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_left);
 
         backSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_left);
         backSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_out_right);
+
+        if (forgotPass) {
+            oldPassContainer.setVisibility(View.GONE);
+            phoneContainer.setVisibility(View.VISIBLE);
+        } else {
+            oldPassContainer.setVisibility(View.VISIBLE);
+            phoneContainer.setVisibility(View.GONE);
+        }
 
         Button nextOldPass = root.findViewById(R.id.next_old_pass);
         nextOldPass.setOnClickListener(view -> {
@@ -148,11 +163,18 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                 return;
             }
             newPass.setError(null);
+            loading(true);
+            setLoadingInfo("Changing Password");
             changePass();
 
         });
 
         Button backNewPass = root.findViewById(R.id.back_new_pass);
+        if (forgotPass) {
+            backNewPass.setVisibility(View.GONE);
+        } else {
+            backNewPass.setVisibility(View.VISIBLE);
+        }
         backNewPass.setOnClickListener(view -> {
             back_out(newPassContainer);
             back_in(oldPassContainer);
@@ -165,6 +187,11 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         });
 
         Button backPhone = root.findViewById(R.id.back_phone);
+        if (forgotPass) {
+            backPhone.setVisibility(View.GONE);
+        } else {
+            backPhone.setVisibility(View.VISIBLE);
+        }
         backPhone.setOnClickListener(view -> {
             back_out(phoneContainer);
             back_in(oldPassContainer);
@@ -180,10 +207,24 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
             phoneInput.setError(null);
             loading(true);
-            setLoadingInfo("Verifying");
-            setLoadingInfo("Requesting Otp");
-            sendVerificationCode("+91" + getPhone());
+            setLoadingInfo("Checking User Existence");
 
+            FirebaseFirestore.getInstance().collection("Phones")
+                    .get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> list = Objects.requireNonNull(task.getResult()).getDocuments();
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getId().equals(getPhone())) {
+                            uid = (String) list.get(i).get("uid");
+                            getEmail();
+                            setLoadingInfo("Verifying");
+                            setLoadingInfo("Requesting Otp");
+                            sendVerificationCode("+91" + getPhone());
+                            break;
+                        }
+                    }
+                }
+            });
         });
 
         Button verify = root.findViewById(R.id.verify);
@@ -198,6 +239,23 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
         });
 
         return root;
+    }
+
+    private void getEmail() {
+        if (forgotPass) {
+            if (uid != null) {
+                FirebaseFirestore.getInstance().collection("Users").document(uid)
+                        .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        email = (String) Objects.requireNonNull(task.getResult()).get("email");
+                    }
+                });
+            }
+            return;
+        }
+
+        uid = FirebaseAuth.getInstance().getUid();
+        email = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
     }
 
     private void in(LinearLayout l1) {
@@ -222,8 +280,8 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
     private void changePass() {
 
-        if (pass != null)
-            loading(true);
+
+        loading(true);
         setLoadingInfo("Changing Password");
 
         try {
@@ -308,6 +366,15 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
             return;
         }
 
+        if (forgotPass) {
+            oldPassContainer.setVisibility(View.GONE);
+            newPassContainer.setVisibility(View.GONE);
+            phoneContainer.setVisibility(View.VISIBLE);
+            optContainer.setVisibility(View.GONE);
+            loadingContainer.setVisibility(View.GONE);
+            return;
+        }
+
         oldPassContainer.setVisibility(View.VISIBLE);
         newPassContainer.setVisibility(View.GONE);
         phoneContainer.setVisibility(View.GONE);
@@ -343,7 +410,7 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
             DocumentReference docRef = FirebaseFirestore.getInstance()
                     .collection("Users").document(uid);
 
-            pass = docRef.addSnapshotListener((documentSnapshot, e) -> {
+            passRegister = docRef.addSnapshotListener((documentSnapshot, e) -> {
                 if (documentSnapshot != null) {
                     FirebaseAuth.getInstance().signInWithEmailAndPassword(Objects.requireNonNull(documentSnapshot.get("email")).toString(),
                             Objects.requireNonNull(documentSnapshot.get("password")).toString())
@@ -352,7 +419,7 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                                     out(loadingContainer);
                                     in(newPassContainer);
                                 } else {
-                                    pass.remove();
+                                    passRegister.remove();
                                     loading(false);
                                     Common.toastShort(requireActivity(), "Phone verification failed", 0, 0);
                                 }

@@ -83,7 +83,6 @@ public class Login extends AppCompatActivity {
                         Map<String, Object> documentSnapshot = document.getData();
                         if (documentSnapshot.containsValue(getEmail())) {
                             contains = true;
-                            System.out.println("HEY HEY HEY HEY HEY HEY Contains");
                             break;
                         }
                     }
@@ -117,6 +116,11 @@ public class Login extends AppCompatActivity {
         binding.loginPhone.setOnClickListener(view -> {
             PhoneLoginFragment phoneLoginFragment = new PhoneLoginFragment();
             phoneLoginFragment.show(getSupportFragmentManager(), phoneLoginFragment.getTag());
+        });
+
+        binding.forgotPass.setOnClickListener(view -> {
+            ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment(true);
+            changePasswordFragment.show(getSupportFragmentManager(), changePasswordFragment.getTag());
         });
 
     }

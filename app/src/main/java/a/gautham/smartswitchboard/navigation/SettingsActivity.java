@@ -148,7 +148,7 @@ public class SettingsActivity extends AppCompatActivity {
             Preference change_pass = findPreference("change_pass");
             if (change_pass != null) {
                 change_pass.setOnPreferenceClickListener(preference -> {
-                    ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
+                    ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment(false);
                     changePasswordFragment.show(
                             requireActivity().getSupportFragmentManager(), changePasswordFragment.getTag());
                     return true;
