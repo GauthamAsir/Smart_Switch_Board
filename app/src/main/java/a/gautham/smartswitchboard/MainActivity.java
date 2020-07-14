@@ -94,7 +94,20 @@ public class MainActivity extends AppCompatActivity implements
                 appUpdater.start();
             }
 
-            getAccountInfo();
+            SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+            String mail = preferences.getString("email", "");
+            String name = preferences.getString("name", "");
+            String phone = preferences.getString("phone_number", "");
+
+            if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
+                getAccountInfo();
+            } else {
+                Common.NAME = name;
+                Common.EMAIL = mail;
+                Common.PHONE_NUMBER = phone;
+                setHeaderName();
+            }
+
         } else {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
         }
@@ -143,9 +156,12 @@ public class MainActivity extends AppCompatActivity implements
                         Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
                         Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
 
-                        View headerView = binding.navView.getHeaderView(0);
-                        final TextView t1 = headerView.findViewById(R.id.header_txt);
-                        t1.setText(String.format(Locale.getDefault(), "Hello, %s", Common.NAME));
+                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                        preferences.edit().putString("email", Common.EMAIL).apply();
+                        preferences.edit().putString("name", Common.NAME).apply();
+                        preferences.edit().putString("phone_number", Common.PHONE_NUMBER).apply();
+
+                        setHeaderName();
 
                         currentDeviceMap = (Map<String, List<CurrentDevice>>) document.get("current_device");
 
@@ -179,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements
 
         }).start();
 
+    }
+
+    private void setHeaderName() {
+        View headerView = binding.navView.getHeaderView(0);
+        final TextView t1 = headerView.findViewById(R.id.header_txt);
+        t1.setText(String.format(Locale.getDefault(), "Hello, %s", Common.NAME));
     }
 
     @Override
