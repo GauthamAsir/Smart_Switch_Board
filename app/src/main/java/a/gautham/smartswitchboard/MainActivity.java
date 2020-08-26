@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
         if (!Common.getConnectivityStatus(getApplicationContext())) {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
         } else {
-            new CheckUserExists().execute();
+            checkUserData();
         }
     }
 
@@ -194,11 +193,8 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private class CheckUserExists extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-
+    private void checkUserData() {
+        new Thread(() -> {
             if (Common.uid.equals("default")) {
                 FirebaseAuth.getInstance().signOut();
                 runOnUiThread(() -> {
@@ -206,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements
                     startActivity(new Intent(getApplicationContext(), Login.class));
                     finish();
                 });
-                return null;
+                return;
             }
 
             DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
@@ -294,9 +290,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
 
                     });
-
-            return null;
-        }
+        }).start();
     }
 
 }
