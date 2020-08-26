@@ -10,13 +10,12 @@ android {
 
     defaultConfig {
         applicationId "a.gautham.smartswitchboard"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.3"
-        Date date = new Date()
-        String d = date.format('_ddMMYYYY')
-        setProperty("archivesBaseName", "smart_switch_board_v$versionName$d")
+        String d = System.currentTimeMillis().toString()
+        setProperty("archivesBaseName", "smart_switch_board_v$versionName-$d")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -50,8 +49,15 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-auth:19.3.2'
     implementation 'com.google.firebase:firebase-firestore:21.5.0'
+    implementation 'com.google.firebase:firebase-database:19.3.1'
 
     //Spots Dialog
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
 }

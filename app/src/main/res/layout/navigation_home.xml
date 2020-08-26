@@ -12,13 +12,17 @@
         android:layout_centerInParent="true"
         android:fontFamily="@font/drift_wood"
         android:gravity="center"
+        android:visibility="gone"
         android:text="@string/menu_home"
         android:textSize="@dimen/_42sp" />
 
-    <ListView
-        android:id="@+id/list_view"
+    <GridView
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:horizontalSpacing="15dp"
+        android:numColumns="2"
+        android:verticalSpacing="20dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -26,8 +30,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:gravity="end|center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/new_connection_container"
@@ -68,7 +71,7 @@
                 android:contentDescription="@string/share_code"
                 android:scaleType="centerCrop"
                 android:src="@drawable/wifi_config"
-                android:tint="@color/colorPrimary" />
+                app:tint="@color/colorPrimary" />
 
         </LinearLayout>
 
@@ -111,7 +114,7 @@
                 android:contentDescription="@string/share_code"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_baseline_share_24"
-                android:tint="@color/colorPrimary" />
+                app:tint="@color/colorPrimary" />
 
         </LinearLayout>
 
@@ -121,7 +124,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_24dp"
             android:backgroundTint="@color/colorPrimary"
-            android:elevation="@dimen/_6dp"
             android:src="@drawable/ic_round_add_24"
             app:borderWidth="@dimen/_0dp"
             app:elevation="@dimen/_12dp"

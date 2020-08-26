@@ -78,10 +78,7 @@ public class MainActivity extends AppCompatActivity implements
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
-            binding.navView.setCheckedItem(R.id.nav_home);
-        }
+        if (savedInstanceState == null) navigateToHome();
 
         boolean checkUpdate = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext()).getBoolean("check_update", true);
@@ -111,6 +108,19 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
         }
+    }
+
+    void navigateToHome() {
+
+        Bundle args = new Bundle();
+        if (getIntent().getData() != null) args.putString("data", getIntent().getData().toString());
+        if (getIntent().getExtras() != null) args.putAll(getIntent().getExtras());
+
+        Home home = new Home();
+        home.setArguments(args);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, home).commit();
+
+        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
     }
 
     @Override
@@ -209,8 +219,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.nav_home:
             default:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
-                Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
+                navigateToHome();
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
