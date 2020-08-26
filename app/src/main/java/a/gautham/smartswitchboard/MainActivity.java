@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -91,20 +92,6 @@ public class MainActivity extends AppCompatActivity implements
                 appUpdater.start();
             }
 
-            SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-            String mail = preferences.getString("email", "");
-            String name = preferences.getString("name", "");
-            String phone = preferences.getString("phone_number", "");
-
-            if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
-                getAccountInfo();
-            } else {
-                Common.NAME = name;
-                Common.EMAIL = mail;
-                Common.PHONE_NUMBER = phone;
-                setHeaderName();
-            }
-
         } else {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
         }
@@ -129,82 +116,9 @@ public class MainActivity extends AppCompatActivity implements
         Common.SETTINGS_ENABLED = Common.getConnectivityStatus(getApplicationContext());
         if (!Common.getConnectivityStatus(getApplicationContext())) {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
+        } else {
+            new CheckUserExists().execute();
         }
-    }
-
-    private void getAccountInfo() {
-
-        new Thread(() -> {
-
-            if (Common.uid.equals("default")) {
-                FirebaseAuth.getInstance().signOut();
-                runOnUiThread(() -> {
-                    Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
-                    startActivity(new Intent(getApplicationContext(), Login.class));
-                });
-                return;
-            }
-
-            DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
-                    .document(Common.uid);
-
-            docRef.get()
-                    .addOnCompleteListener(task -> {
-
-                        DocumentSnapshot document = task.getResult();
-
-                        if (!task.isSuccessful() || document == null) {
-                            FirebaseAuth.getInstance().signOut();
-                            runOnUiThread(() -> {
-                                Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
-                                startActivity(new Intent(getApplicationContext(), Login.class));
-                            });
-                            return;
-                        }
-
-                        Common.NAME = Objects.requireNonNull(document.get("name")).toString();
-                        Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
-                        Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
-
-                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                        preferences.edit().putString("email", Common.EMAIL).apply();
-                        preferences.edit().putString("name", Common.NAME).apply();
-                        preferences.edit().putString("phone_number", Common.PHONE_NUMBER).apply();
-
-                        setHeaderName();
-
-                        currentDeviceMap = (Map<String, List<CurrentDevice>>) document.get("current_device");
-
-                        Date d = new Date();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        String date = dateFormat.format(d);
-
-                        if (currentDeviceMap.containsKey(date)) {
-                            List<CurrentDevice> list = currentDeviceMap.get(date);
-                            if (list != null) {
-                                list.add(new CurrentDevice(Build.BRAND, Build.MODEL,
-                                        String.valueOf(Build.VERSION.SDK_INT)));
-                                currentDeviceMap.put(date, list);
-
-                                FirebaseFirestore.getInstance().collection("Users")
-                                        .document(Common.uid)
-                                        .update("current_device", currentDeviceMap);
-
-                            }
-                        } else {
-                            List<CurrentDevice> currentDeviceList = new ArrayList<>();
-                            currentDeviceList.add(new CurrentDevice(Build.BRAND, Build.MODEL,
-                                    String.valueOf(Build.VERSION.SDK_INT)));
-                            currentDeviceMap.put(date, currentDeviceList);
-                            FirebaseFirestore.getInstance().collection("Users")
-                                    .document(Common.uid)
-                                    .update("current_device", currentDeviceMap);
-                        }
-
-                    });
-
-        }).start();
-
     }
 
     private void setHeaderName() {
@@ -277,6 +191,111 @@ public class MainActivity extends AppCompatActivity implements
                 snackbar.show();
                 back_pressed = System.currentTimeMillis();
             }
+        }
+    }
+
+    private class CheckUserExists extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            if (Common.uid.equals("default")) {
+                FirebaseAuth.getInstance().signOut();
+                runOnUiThread(() -> {
+                    Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                    startActivity(new Intent(getApplicationContext(), Login.class));
+                    finish();
+                });
+                return null;
+            }
+
+            DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
+                    .document(Common.uid);
+
+            docRef.get()
+                    .addOnCompleteListener(task -> {
+
+                        DocumentSnapshot document = task.getResult();
+
+                        if (!task.isSuccessful() || document == null) {
+                            FirebaseAuth.getInstance().signOut();
+                            runOnUiThread(() -> {
+                                Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                                startActivity(new Intent(getApplicationContext(), Login.class));
+                                finish();
+                            });
+                            return;
+                        }
+
+                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+
+                        String mail = preferences.getString("email", "");
+                        String name = preferences.getString("name", "");
+                        String phone = preferences.getString("phone_number", "");
+                        String pass = preferences.getString("password", "");
+
+                        if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
+
+                            Common.NAME = Objects.requireNonNull(document.get("name")).toString();
+                            Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
+                            Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
+
+                            preferences.edit().putString("email", Common.EMAIL).apply();
+                            preferences.edit().putString("name", Common.NAME).apply();
+                            preferences.edit().putString("phone_number", Common.PHONE_NUMBER).apply();
+
+                        } else {
+                            Common.NAME = name;
+                            Common.EMAIL = mail;
+                            Common.PHONE_NUMBER = phone;
+                        }
+                        setHeaderName();
+
+                        if (pass != null && !pass.isEmpty()) {
+                            if (!pass.equals(Objects.requireNonNull(document.get("password")).toString())) {
+                                FirebaseAuth.getInstance().signOut();
+                                runOnUiThread(() -> {
+                                    preferences.edit().putString("password", "").apply();
+                                    Common.toastLong(getApplicationContext(),
+                                            "Your password has been changed recently, re-login to continue", Color.RED, Color.WHITE);
+                                    startActivity(new Intent(getApplicationContext(), Login.class));
+                                    finish();
+                                });
+                                return;
+                            }
+                        }
+
+                        currentDeviceMap = (Map<String, List<CurrentDevice>>) document.get("current_device");
+
+                        Date d = new Date();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                        String date = dateFormat.format(d);
+
+                        if (currentDeviceMap.containsKey(date)) {
+                            List<CurrentDevice> list = currentDeviceMap.get(date);
+                            if (list != null) {
+                                list.add(new CurrentDevice(Build.BRAND, Build.MODEL,
+                                        String.valueOf(Build.VERSION.SDK_INT)));
+                                currentDeviceMap.put(date, list);
+
+                                FirebaseFirestore.getInstance().collection("Users")
+                                        .document(Common.uid)
+                                        .update("current_device", currentDeviceMap);
+
+                            }
+                        } else {
+                            List<CurrentDevice> currentDeviceList = new ArrayList<>();
+                            currentDeviceList.add(new CurrentDevice(Build.BRAND, Build.MODEL,
+                                    String.valueOf(Build.VERSION.SDK_INT)));
+                            currentDeviceMap.put(date, currentDeviceList);
+                            FirebaseFirestore.getInstance().collection("Users")
+                                    .document(Common.uid)
+                                    .update("current_device", currentDeviceMap);
+                        }
+
+                    });
+
+            return null;
         }
     }
 

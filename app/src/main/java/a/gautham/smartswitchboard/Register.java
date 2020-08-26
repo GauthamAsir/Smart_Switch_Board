@@ -526,6 +526,7 @@ public class Register extends AppCompatActivity {
 
                                       SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
                                       preferences.edit().putString("uid", user.getUid()).apply();
+                                      preferences.edit().putString("password", pass).apply();
 
                                       Common.uid = user.getUid();
                                       Common.toastShort(getApplicationContext(), "Register successful", Color.GREEN, Color.BLACK);

@@ -92,6 +92,7 @@ public class Login extends AppCompatActivity {
                                     if (task12.isSuccessful()) {
                                         SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
                                         preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
+                                        preferences.edit().putString("password", getPassword()).apply();
                                         Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                                         if (dialog.isShowing())
                                             dialog.dismiss();
