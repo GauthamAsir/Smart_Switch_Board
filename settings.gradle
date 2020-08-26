@@ -1,4 +1,3 @@
 include ':app_updater'
-include ':ssb_connect'
 include ':app'
 rootProject.name = "Smart Switch Board"

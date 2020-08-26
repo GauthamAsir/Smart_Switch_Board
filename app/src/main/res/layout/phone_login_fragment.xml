@@ -6,108 +6,108 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/phoneInputContainer"
+  <LinearLayout
+      android:id="@+id/phoneInputContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/phoneInputDialog"
+        style="@style/textInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginStart="@dimen/_24dp"
+        android:layout_marginTop="@dimen/_12dp"
+        android:layout_marginEnd="@dimen/_24dp"
+        android:layout_marginBottom="@dimen/_12dp"
+        android:hint="@string/phone_number"
+        android:nextFocusDown="@id/login_phone_dialog"
+        app:counterEnabled="true"
+        app:counterMaxLength="10"
+        app:errorEnabled="true"
+        app:hintEnabled="true">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/phoneInputDialog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/phone_number"
-            style="@style/textInput"
-            app:counterEnabled="true"
-            app:counterMaxLength="10"
-            app:errorEnabled="true"
-            app:hintEnabled="true"
-            android:nextFocusDown="@id/login_phone_dialog"
-            android:layout_marginStart="@dimen/_24dp"
-            android:layout_marginEnd="@dimen/_24dp"
-            android:layout_marginTop="@dimen/_12dp"
-            android:layout_marginBottom="@dimen/_12dp">
+      <com.google.android.material.textfield.TextInputEditText
+          style="@style/editTextInput"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:digits="0123456789"
+          android:drawableEnd="@drawable/ic_round_phone_24"
+          android:focusable="true"
+          android:imeOptions="actionDone"
+          android:inputType="phone"
+          android:nextFocusDown="@id/login_phone_dialog" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"
-                android:digits="0123456789"
-                android:drawableEnd="@drawable/ic_round_phone_24"
-                android:nextFocusDown="@id/login_phone_dialog"
-                android:imeOptions="actionDone"
-                style="@style/editTextInput"
-                android:focusable="true"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/login_phone_dialog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/log_in"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_marginStart="@dimen/_24dp"
-            android:layout_marginEnd="@dimen/_24dp"
-            android:layout_marginBottom="@dimen/_12dp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/otp_container"
+    <Button
+        android:id="@+id/login_phone_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/_24dp"
-        android:visibility="gone">
+        android:layout_marginStart="@dimen/_24dp"
+        android:layout_marginEnd="@dimen/_24dp"
+        android:layout_marginBottom="@dimen/_12dp"
+        android:text="@string/log_in"
+        android:textAllCaps="false"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@android:color/white" />
 
-        <EditText
-            android:id="@+id/optView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:digits="0123456789"
-            android:importantForAutofill="no"
-            android:imeOptions="actionDone"
-            android:hint="@string/enter_otp"
-            android:gravity="center"/>
+  </LinearLayout>
 
-        <Button
-            android:id="@+id/verify"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_12dp"
-            android:text="@string/verify"
-            android:textColor="@android:color/white"
-            android:textAppearance="?android:textAppearanceMedium"/>
+  <LinearLayout
+      android:id="@+id/otp_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/_24dp"
+      android:orientation="vertical"
+      android:visibility="gone">
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/loadingContainer"
+    <EditText
+        android:id="@+id/optView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:ignore="UseCompoundDrawables"
-        android:visibility="gone">
+        android:digits="0123456789"
+        android:gravity="center"
+        android:hint="@string/enter_otp"
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no"
+        android:inputType="number" />
 
-        <ImageView
-            android:id="@+id/loading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/heart_rate"
-            android:contentDescription="@null"
-            android:padding="@dimen/_24dp"/>
+    <Button
+        android:id="@+id/verify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12dp"
+        android:text="@string/verify"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="@dimen/_6dp"
-            android:textAppearance="?android:textAppearanceLarge"/>
+  </LinearLayout>
 
-    </LinearLayout>
+  <LinearLayout
+      android:id="@+id/loadingContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:visibility="gone"
+      tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:padding="@dimen/_24dp"
+        android:src="@drawable/heart_rate" />
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/_6dp"
+        android:textAppearance="?android:textAppearanceLarge" />
+
+  </LinearLayout>
 
 </LinearLayout>

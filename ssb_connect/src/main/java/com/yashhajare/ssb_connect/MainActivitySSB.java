@@ -132,7 +132,7 @@ public class MainActivitySSB extends AppCompatActivity {
     }
 
     public void display_wifi() {
-        ListView list = (ListView) findViewById(R.id.wifi_list);
+        ListView list = findViewById(R.id.wifi_list);
         List<ScanResult> results = null;
 
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -153,7 +153,7 @@ public class MainActivitySSB extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                String wifi_name = ((TextView) view).getText().toString();
-                String wifi_name = (String) parent.getItemAtPosition(position).toString();
+                String wifi_name = parent.getItemAtPosition(position).toString();
                 connect_wifi(wifi_name);
             }
         });
@@ -164,10 +164,10 @@ public class MainActivitySSB extends AppCompatActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.wifi_log_in);
         dialog.setTitle("Enter your WiFi Password:");
-        final TextView t1 = (TextView) dialog.findViewById(R.id.ssid_login);
+        final TextView t1 = dialog.findViewById(R.id.ssid_login);
         t1.setText(wifi_name);
-        final EditText e1 = (EditText) dialog.findViewById(R.id.pass_login);
-        Button b1 = (Button) dialog.findViewById(R.id.connect_btn);
+        final EditText e1 = dialog.findViewById(R.id.pass_login);
+        Button b1 = dialog.findViewById(R.id.connect_btn);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -527,8 +527,9 @@ public class MainActivitySSB extends AppCompatActivity {
             wifiManager.reconnect();
 
             p.dismiss();
-            Intent i = new Intent(getApplicationContext(), HomeSSB.class);
-            startActivity(i);
+            onBackPressed();
+            //Intent i = new Intent(getApplicationContext(), HomeSSB.class);
+            //startActivity(i);
         }
     }
 
