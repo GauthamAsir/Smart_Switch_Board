@@ -6,20 +6,20 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="12dp" />
+        android:layout_height="@dimen/_12dp" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please connect to WiFi network"
+        android:text="@string/please_connect_to_wifi_network"
         android:textAlignment="center"
         android:textColor="#020202"
         android:textSize="18sp" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="12dp" />
+        android:layout_height="@dimen/_12dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,10 +28,10 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="WiFi name (SSID) : SSB"
+            android:text="@string/wifi_name_ssid_ssb"
             android:textAlignment="center"
             android:textColor="#090808"
             android:textSize="18sp" />
@@ -45,10 +45,10 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Password : 87654321"
+            android:text="@string/password_87654321"
             android:textAlignment="center"
             android:textColor="#090909"
             android:textSize="18sp" />
@@ -57,6 +57,6 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="12dp" />
+        android:layout_height="@dimen/_12dp" />
 
 </LinearLayout>
