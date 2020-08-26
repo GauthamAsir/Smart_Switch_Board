@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -28,9 +27,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -51,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements
     private ActivityMainBinding binding;
     private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
     private long back_pressed;
+    private SharedPreferences userPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements
 
         binding.navView.setNavigationItemSelectedListener(this);
 
+        userPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -76,6 +75,16 @@ public class MainActivity extends AppCompatActivity implements
 
         boolean checkUpdate = PreferenceManager
                 .getDefaultSharedPreferences(getApplicationContext()).getBoolean("check_update", true);
+
+        String mail = userPreferences.getString("email", "");
+        String name = userPreferences.getString("name", "");
+        String phone = userPreferences.getString("phone_number", "");
+
+        if (mail != null && !mail.isEmpty() && name != null && !name.isEmpty() && phone != null && !phone.isEmpty()) {
+            Common.NAME = name;
+            Common.EMAIL = mail;
+            Common.PHONE_NUMBER = phone;
+        }
 
         if (Common.getConnectivityStatus(getApplicationContext())) {
             if (checkUpdate) {
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
         Common.SETTINGS_ENABLED = Common.getConnectivityStatus(getApplicationContext());
         if (!Common.getConnectivityStatus(getApplicationContext())) {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
@@ -236,12 +246,10 @@ public class MainActivity extends AppCompatActivity implements
                             return;
                         }
 
-                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-
-                        String mail = preferences.getString("email", "");
-                        String name = preferences.getString("name", "");
-                        String phone = preferences.getString("phone_number", "");
-                        String pass = preferences.getString("password", "");
+                        String mail = userPreferences.getString("email", "");
+                        String name = userPreferences.getString("name", "");
+                        String phone = userPreferences.getString("phone_number", "");
+                        String pass = userPreferences.getString("password", "");
 
                         if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
 
@@ -249,9 +257,9 @@ public class MainActivity extends AppCompatActivity implements
                             Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
                             Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
 
-                            preferences.edit().putString("email", Common.EMAIL).apply();
-                            preferences.edit().putString("name", Common.NAME).apply();
-                            preferences.edit().putString("phone_number", Common.PHONE_NUMBER).apply();
+                            userPreferences.edit().putString("email", Common.EMAIL).apply();
+                            userPreferences.edit().putString("name", Common.NAME).apply();
+                            userPreferences.edit().putString("phone_number", Common.PHONE_NUMBER).apply();
 
                         } else {
                             Common.NAME = name;
@@ -264,42 +272,17 @@ public class MainActivity extends AppCompatActivity implements
                             if (!pass.equals(Objects.requireNonNull(document.get("password")).toString())) {
                                 FirebaseAuth.getInstance().signOut();
                                 runOnUiThread(() -> {
-                                    preferences.edit().putString("password", "").apply();
+                                    userPreferences.edit().clear().apply();
+                                    Common.uid = "default";
+                                    Common.PHONE_NUMBER = "default";
+                                    Common.EMAIL = "default";
+                                    Common.NAME = "default";
                                     Common.toastLong(getApplicationContext(),
                                             "Your password has been changed recently, re-login to continue", Color.RED, Color.WHITE);
                                     startActivity(new Intent(getApplicationContext(), Login.class));
                                     finish();
                                 });
-                                return;
                             }
-                        }
-
-                        currentDeviceMap = (Map<String, List<CurrentDevice>>) document.get("current_device");
-
-                        Date d = new Date();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        String date = dateFormat.format(d);
-
-                        if (currentDeviceMap.containsKey(date)) {
-                            List<CurrentDevice> list = currentDeviceMap.get(date);
-                            if (list != null) {
-                                list.add(new CurrentDevice(Build.BRAND, Build.MODEL,
-                                        String.valueOf(Build.VERSION.SDK_INT)));
-                                currentDeviceMap.put(date, list);
-
-                                FirebaseFirestore.getInstance().collection("Users")
-                                        .document(Common.uid)
-                                        .update("current_device", currentDeviceMap);
-
-                            }
-                        } else {
-                            List<CurrentDevice> currentDeviceList = new ArrayList<>();
-                            currentDeviceList.add(new CurrentDevice(Build.BRAND, Build.MODEL,
-                                    String.valueOf(Build.VERSION.SDK_INT)));
-                            currentDeviceMap.put(date, currentDeviceList);
-                            FirebaseFirestore.getInstance().collection("Users")
-                                    .document(Common.uid)
-                                    .update("current_device", currentDeviceMap);
                         }
 
                     });

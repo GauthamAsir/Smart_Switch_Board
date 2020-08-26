@@ -33,17 +33,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import a.gautham.smartswitchboard.databinding.ActivityRegisterBinding;
-import a.gautham.smartswitchboard.models.CurrentDevice;
 import dmax.dialog.SpotsDialog;
 
 public class Register extends AppCompatActivity {
@@ -477,20 +474,10 @@ public class Register extends AppCompatActivity {
                final String email = getEmail();
                final String pass = getPass();
                final String pno = getPhoneNumber();
+
                Date date = new Date();
                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy | hh:mm:ss a", Locale.getDefault());
-
                final String createdDate = df.format(date);
-               final String createdDeviceInfo = String.format(Locale.getDefault(),"%s | %s | %s",
-                       Build.BRAND, Build.MODEL, Build.VERSION.SDK_INT);
-
-               List<CurrentDevice> currentDeviceList = new ArrayList<>();
-               currentDeviceList.add(new CurrentDevice(Build.BRAND, Build.MODEL,
-                       String.valueOf(Build.VERSION.SDK_INT)));
-
-               final Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
-               SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-               currentDeviceMap.put(dateFormat.format(date), currentDeviceList);
 
                auth.createUserWithEmailAndPassword(getEmail(), getPass()).addOnCompleteListener(task1 -> {
                    if (task1.isSuccessful()){
@@ -501,8 +488,7 @@ public class Register extends AppCompatActivity {
                        userMap.put("password", pass);
                        userMap.put("phone_number", pno);
                        userMap.put("created_date", createdDate);
-                       userMap.put("created_device_info", createdDeviceInfo);
-                       userMap.put("current_device", currentDeviceMap);
+                       userMap.put("current_device", Build.VERSION.SDK_INT);
 
                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
