@@ -280,7 +280,6 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
     private void changePass() {
 
-
         loading(true);
         setLoadingInfo("Changing Password");
 
@@ -296,14 +295,15 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                                 .addOnCompleteListener(task1 -> {
                                     if (task.isSuccessful()) {
                                         Common.toastShort(getActivity(), "Password Updated", 0, 0);
-                                        dismiss();
                                     } else {
                                         Log.d("Error", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
-                                        startActivity(new Intent(requireActivity(), Login.class));
-                                        requireActivity().finish();
                                         Common.toastShort(getActivity(), "Password Updated, Re-Login",
                                                 0, 0);
                                     }
+                                    FirebaseAuth.getInstance().signOut();
+                                    dismiss();
+                                    startActivity(new Intent(requireActivity(), Login.class));
+                                    requireActivity().finish();
                                 });
                     } else {
                         Log.d("Error", "E-mail is null");
@@ -312,7 +312,7 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                     }
                 } else {
                     loading(false);
-                    Log.e("Change Password HEY: ", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
+                    Log.e("Change Password : ", Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()));
                     Common.toastShort(getActivity(), Objects.requireNonNull(task.getException().getMessage()),
                             0, 0);
                 }
