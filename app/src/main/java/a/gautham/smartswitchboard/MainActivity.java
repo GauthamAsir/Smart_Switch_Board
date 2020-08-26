@@ -27,16 +27,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import a.gautham.library.AppUpdater;
 import a.gautham.library.helper.Display;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
-import a.gautham.smartswitchboard.models.CurrentDevice;
 import a.gautham.smartswitchboard.navigation.Home;
 import a.gautham.smartswitchboard.navigation.SettingsActivity;
 import dmax.dialog.SpotsDialog;
@@ -45,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
-    private Map<String, List<CurrentDevice>> currentDeviceMap = new HashMap<>();
     private long back_pressed;
     private SharedPreferences userPreferences;
 
