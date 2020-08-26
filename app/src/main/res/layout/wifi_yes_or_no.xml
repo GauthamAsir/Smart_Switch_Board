@@ -28,7 +28,6 @@
                 android:text="@string/do_you_have_wi_fi_router"
                 android:textAlignment="center"
                 android:textAppearance="?android:textAppearanceLarge"
-                android:textColor="#0E0E0E"
                 android:textSize="20sp" />
 
         </LinearLayout>

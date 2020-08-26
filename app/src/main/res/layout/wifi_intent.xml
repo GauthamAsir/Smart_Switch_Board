@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:text="@string/please_connect_to_wifi_network"
         android:textAlignment="center"
-        android:textColor="#020202"
         android:textSize="18sp" />
 
     <Space
@@ -33,7 +32,6 @@
             android:layout_weight="1"
             android:text="@string/wifi_name_ssid_ssb"
             android:textAlignment="center"
-            android:textColor="#090808"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -50,7 +48,6 @@
             android:layout_weight="1"
             android:text="@string/password_87654321"
             android:textAlignment="center"
-            android:textColor="#090909"
             android:textSize="18sp" />
 
     </LinearLayout>
