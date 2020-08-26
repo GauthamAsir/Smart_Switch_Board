@@ -12,7 +12,6 @@
         android:text="@string/register"
         android:gravity="center"
         android:textSize="@dimen/_42sp"
-        android:fontFamily="@font/drift_wood"
         android:layout_above="@+id/credential_container"
         android:layout_marginBottom="@dimen/_12dp"
         android:textColor="@color/colorAccent"/>
@@ -42,7 +41,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/drift_wood"
                 android:textSize="42sp"
                 android:text="@string/name"
                 android:gravity="center"
@@ -99,7 +97,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/drift_wood"
                 android:textSize="42sp"
                 android:text="@string/email"
                 android:gravity="center"
@@ -174,7 +171,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/drift_wood"
                 android:textSize="42sp"
                 android:text="@string/password"
                 android:gravity="center"
@@ -248,7 +244,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/drift_wood"
                 android:textSize="42sp"
                 android:text="@string/confirm_password"
                 android:gravity="center"
@@ -322,7 +317,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/drift_wood"
                 android:textSize="42sp"
                 android:text="@string/phone_number"
                 android:gravity="center"
