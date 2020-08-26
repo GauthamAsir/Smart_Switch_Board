@@ -7,10 +7,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -63,12 +61,6 @@ public class MainActivity extends AppCompatActivity implements
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Window window = getWindow();
-        TypedValue typedValue = new TypedValue();
-        getApplicationContext().getTheme()
-                .resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
-        window.setStatusBarColor(typedValue.data);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
