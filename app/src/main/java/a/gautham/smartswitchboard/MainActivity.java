@@ -15,8 +15,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
@@ -140,24 +142,43 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.nav_logout:
 
-                android.app.AlertDialog alertDialog = new SpotsDialog.Builder()
-                        .setContext(this)
-                        .setCancelable(false)
-                        .setMessage("Logging out...")
-                        .setTheme(R.style.DialogCustom)
-                        .build();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle(R.string.confirmation);
+                builder.setMessage(R.string.really_want_to_log_out);
 
-                alertDialog.show();
+                builder.setCancelable(true);
 
-                FirebaseAuth.getInstance().signOut();
-                SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                preferences.edit().clear().apply();
-                Common.uid = "default";
-                Common.PHONE_NUMBER = "default";
-                Common.EMAIL = "default";
-                Common.NAME = "default";
+                builder.setPositiveButton("Yes", (dialogInterface, i) -> {
 
-                new Handler().postDelayed(() -> startActivity(new Intent(getApplicationContext(), Login.class)), 1000);
+                    android.app.AlertDialog alertDialog = new SpotsDialog.Builder()
+                            .setContext(this)
+                            .setCancelable(false)
+                            .setMessage("Logging out...")
+                            .setTheme(R.style.DialogCustom)
+                            .build();
+
+                    alertDialog.show();
+
+                    FirebaseAuth.getInstance().signOut();
+                    SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                    preferences.edit().clear().apply();
+                    Common.uid = "default";
+                    Common.PHONE_NUMBER = "default";
+                    Common.EMAIL = "default";
+                    Common.NAME = "default";
+
+                    new Handler().postDelayed(() -> startActivity(new Intent(getApplicationContext(), Login.class)), 1000);
+
+                });
+
+                builder.setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss());
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                        getApplicationContext(), R.color.colorAccent));
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                        getApplicationContext(), R.color.colorAccent));
                 break;
         }
 

@@ -91,4 +91,6 @@
     <string name="paste_here">Paste here!</string>
     <string name="change_title">Change Title:</string>
     <string name="type_here">Type here!</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="really_want_to_log_out">Do you really want to Log out ?</string>
 </resources>
