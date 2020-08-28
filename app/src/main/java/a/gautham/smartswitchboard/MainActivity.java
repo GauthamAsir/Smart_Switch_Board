@@ -43,6 +43,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         binding.sync.setOnClickListener(v -> {
-            new Utils().syncSSBList(getApplicationContext(), uid);
+            syncSSBList(uid);
             binding.syncContainer.setVisibility(View.GONE);
             binding.gridview.setVisibility(View.VISIBLE);
             binding.fabBts.setVisibility(View.VISIBLE);
@@ -229,6 +230,43 @@ public class MainActivity extends AppCompatActivity implements
             binding.message.setVisibility(View.GONE);
             Start_Custom_adaptor();
         }
+    }
+
+    private void syncSSBList(String uid) {
+
+        SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+
+        SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        preferenceChangeListener = (sharedPreferences, s) -> {
+            if (fire_list != null) fire_list.clear();
+            getList();
+        };
+        prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
+                .document(uid);
+
+        docRef.get().addOnCompleteListener(task -> {
+
+            DocumentSnapshot document = task.getResult();
+
+            if (task.isSuccessful() && document != null) {
+                if (document.get("ssb_list") != null) {
+                    ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
+                    ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+                    if (arrayList.size() > 0) {
+                        for (String s : arrayList) {
+                            ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                            ssbList.add(myList);
+                        }
+                        new Utils().saveArrayList(MainActivity.this, ssbList, "fire_db_temp");
+                        prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+                    }
+                }
+            } else {
+                Common.toastLong(getApplicationContext(), "Unable to Sync Your Old Data", 0, 0);
+            }
+        });
     }
 
     @Override
