@@ -519,25 +519,34 @@ public class Register extends AppCompatActivity {
                                       startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                       finish();
                                   }else {
+                                      if (requestOpt.isShowing())
+                                          requestOpt.dismiss();
+                                      if (dialog.isShowing())
+                                          dialog.dismiss();
                                       Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task2.getException()).getMessage()), Color.RED, Color.WHITE);
                                       Log.e("Register: ", Objects.requireNonNull(Objects.requireNonNull(task2.getException()).getMessage()));
                                   }
                                });
 
                    }else {
+                       if (requestOpt.isShowing())
+                           requestOpt.dismiss();
+                       if (dialog.isShowing())
+                           dialog.dismiss();
                        Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task1.getException()).getMessage()), Color.RED, Color.WHITE);
                        Log.e("Register: ", Objects.requireNonNull(Objects.requireNonNull(task1.getException()).getMessage()));
                    }
                });
 
            }else {
-               if (dialog.isShowing()){
+               if (requestOpt.isShowing())
+                   requestOpt.dismiss();
+               if (dialog.isShowing())
                    dialog.dismiss();
-               }
-               if (vdialog.isShowing()){
+               if (vdialog.isShowing()) {
                    vdialog.dismiss();
                }
-               Common.toastShort(getApplicationContext(), "Phone verification failed", Color.RED,Color.WHITE);
+               Common.toastShort(getApplicationContext(), "Phone verification failed", Color.RED, Color.WHITE);
            }
         });
     }

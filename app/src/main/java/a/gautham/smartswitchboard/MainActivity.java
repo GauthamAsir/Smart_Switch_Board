@@ -1,6 +1,5 @@
 package a.gautham.smartswitchboard;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -27,12 +26,15 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
 import a.gautham.library.AppUpdater;
 import a.gautham.library.helper.Display;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
+import a.gautham.smartswitchboard.helpers.Utils;
 import a.gautham.smartswitchboard.navigation.Home;
 import a.gautham.smartswitchboard.navigation.SettingsActivity;
 import dmax.dialog.SpotsDialog;
@@ -42,7 +44,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private ActivityMainBinding binding;
     private long back_pressed;
-    private SharedPreferences userPreferences;
+    private SharedPreferences userPreferences, dbPrefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +61,20 @@ public class MainActivity extends AppCompatActivity implements
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
 
+        firestore = FirebaseFirestore.getInstance();
+
         binding.navView.setNavigationItemSelectedListener(this);
 
-        userPreferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+        userPreferences = getSharedPreferences("User", MODE_PRIVATE);
+        dbPrefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+
+        dbPrefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+
+        /*preferenceChangeListener = (sharedPreferences, s) -> {
+            ArrayList<ArrayList<String>> ssbList = new Utils().getArrayList(getApplicationContext(), "fire_db_temp");
+            firestore.collection("Users")
+                    .document(Common.uid).update("ssb_list", ssbList);
+        };*/
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -92,6 +107,12 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dbPrefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
     }
 
     void navigateToHome() {
@@ -156,13 +177,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     alertDialog.show();
 
-                    FirebaseAuth.getInstance().signOut();
-                    SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                    preferences.edit().clear().apply();
-                    Common.uid = "default";
-                    Common.PHONE_NUMBER = "default";
-                    Common.EMAIL = "default";
-                    Common.NAME = "default";
+                    logOut();
 
                     new Handler().postDelayed(() -> startActivity(new Intent(getApplicationContext(), Login.class)), 1000);
 
@@ -182,6 +197,17 @@ public class MainActivity extends AppCompatActivity implements
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logOut() {
+        FirebaseAuth.getInstance().signOut();
+        userPreferences.edit().clear().apply();
+        SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        Common.uid = "default";
+        Common.PHONE_NUMBER = "default";
+        Common.EMAIL = "default";
+        Common.NAME = "default";
     }
 
     @Override
@@ -217,13 +243,14 @@ public class MainActivity extends AppCompatActivity implements
                 FirebaseAuth.getInstance().signOut();
                 runOnUiThread(() -> {
                     Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                    logOut();
                     startActivity(new Intent(getApplicationContext(), Login.class));
                     finish();
                 });
                 return;
             }
 
-            DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
+            DocumentReference docRef = firestore.collection("Users")
                     .document(Common.uid);
 
             docRef.get()
@@ -231,14 +258,29 @@ public class MainActivity extends AppCompatActivity implements
 
                         DocumentSnapshot document = task.getResult();
 
-                        if (!task.isSuccessful() || document == null) {
+                        if (!task.isSuccessful() || document == null || document.get("phone_number") == null) {
                             FirebaseAuth.getInstance().signOut();
                             runOnUiThread(() -> {
                                 Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                                logOut();
                                 startActivity(new Intent(getApplicationContext(), Login.class));
                                 finish();
                             });
                             return;
+                        }
+
+                        boolean syncDbList = userPreferences.getBoolean("sync", false);
+
+                        if (syncDbList && document.get("ssb_list") != null) {
+                            ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
+                            ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+                            for (String s : arrayList) {
+                                ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                                ssbList.add(myList);
+                            }
+                            if (ssbList != null || ssbList.size() > 0) {
+                                new Utils().saveArrayList(getApplicationContext(), ssbList, "fire_db_temp");
+                            }
                         }
 
                         String mail = userPreferences.getString("email", "");
@@ -263,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         setHeaderName();
 
-                        if (pass != null && !pass.isEmpty()) {
+                        if (pass != null && !pass.isEmpty() && document.get("password") != null) {
                             if (!pass.equals(Objects.requireNonNull(document.get("password")).toString())) {
                                 FirebaseAuth.getInstance().signOut();
                                 runOnUiThread(() -> {

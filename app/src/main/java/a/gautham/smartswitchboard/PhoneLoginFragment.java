@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
@@ -90,8 +91,8 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
 
                 DocumentReference docRef = fireStore.collection("Phones").document(getPhone());
 
-                if (!Common.checkInternet(Objects.requireNonNull(getActivity()))){
-                    Common.toastShort(getActivity(), "No Internet Connection", Color.RED,Color.WHITE);
+                if (!Common.checkInternet(requireActivity())) {
+                    Common.toastShort(getActivity(), "No Internet Connection", Color.RED, Color.WHITE);
                     return;
                 }
 
@@ -196,13 +197,16 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
 
                         if (documentSnapshot.exists()) {
 
-                            SharedPreferences preferences = Objects.requireNonNull(getActivity()).getSharedPreferences("User", Context.MODE_PRIVATE);
+                            SharedPreferences preferences = requireActivity().getSharedPreferences("User", Context.MODE_PRIVATE);
                             preferences.edit().putString("uid", Objects.requireNonNull(documentSnapshot.get("uid")).toString()).apply();
                             Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
+                            preferences.edit().putBoolean("sync", true).apply();
 
-                            Common.toastShort(getActivity(), "Login successful", Color.GREEN, Color.BLACK);
+                            Common.toastShort(getActivity(), "Login successful", ContextCompat.getColor(
+                                    requireActivity(), R.color.dark_green
+                            ), Color.BLACK);
                             startActivity(new Intent(getActivity(), MainActivity.class));
-                            Objects.requireNonNull(getActivity()).finish();
+                            requireActivity().finish();
 
                         } else {
                             loading(false);
@@ -242,7 +246,7 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
             otpContainer.setVisibility(View.GONE);
             loadingContainer.setVisibility(View.VISIBLE);
 
-            AnimatedVectorDrawableCompat animatedVector = AnimatedVectorDrawableCompat.create(Objects.requireNonNull(getActivity()), R.drawable.heart_rate);
+            AnimatedVectorDrawableCompat animatedVector = AnimatedVectorDrawableCompat.create(requireActivity(), R.drawable.heart_rate);
             loadingImg.setImageDrawable(animatedVector);
             final Handler mainHandler = new Handler(Looper.getMainLooper());
             assert animatedVector != null;

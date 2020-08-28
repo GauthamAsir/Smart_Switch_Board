@@ -17,6 +17,7 @@ import android.net.wifi.WifiNetworkSuggestion;
 import android.os.AsyncTask;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -41,6 +43,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.R;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -366,6 +369,16 @@ public class NewConnectionIsAwesome extends Activity {
         String json = gson.toJson(list);
         editor.putString(key, json);
         editor.apply();
+        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
+        }.getType();
+        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
+        ArrayList<String> singleList = new ArrayList<>();
+        for (ArrayList<String> s : ssbList) {
+            String joined = TextUtils.join(",", s);
+            singleList.add(joined);
+        }
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(Common.uid).update("ssb_list", singleList);
     }
 
     public ArrayList<ArrayList<String>> getArrayList(String key) {

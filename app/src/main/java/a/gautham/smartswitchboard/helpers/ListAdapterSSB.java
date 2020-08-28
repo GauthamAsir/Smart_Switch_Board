@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,12 +32,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.MainActivity;
 import a.gautham.smartswitchboard.R;
 
@@ -412,6 +415,16 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         String json = gson.toJson(list);
         editor.putString(key, json);
         editor.apply();
+        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
+        }.getType();
+        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
+        ArrayList<String> singleList = new ArrayList<>();
+        for (ArrayList<String> s : ssbList) {
+            String joined = TextUtils.join(",", s);
+            singleList.add(joined);
+        }
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(Common.uid).update("ssb_list", singleList);
     }
 
     public ArrayList<ArrayList<String>> getArrayList(String key) {

@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -93,6 +94,10 @@ public class Login extends AppCompatActivity {
                                         SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
                                         preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
                                         preferences.edit().putString("password", getPassword()).apply();
+                                        preferences.edit().putBoolean("sync", true).apply();
+                                        Common.toastShort(getApplicationContext(), "Login successful", ContextCompat.getColor(
+                                                getApplicationContext(), R.color.dark_green
+                                        ), Color.BLACK);
                                         Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                                         if (dialog.isShowing())
                                             dialog.dismiss();

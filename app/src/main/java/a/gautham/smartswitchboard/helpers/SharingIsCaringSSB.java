@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
@@ -34,6 +36,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.MainActivity;
 import a.gautham.smartswitchboard.R;
 
@@ -448,6 +451,16 @@ public class SharingIsCaringSSB extends Activity {
         String json = gson.toJson(list);
         editor.putString(key, json);
         editor.apply();
+        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
+        }.getType();
+        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
+        ArrayList<String> singleList = new ArrayList<>();
+        for (ArrayList<String> s : ssbList) {
+            String joined = TextUtils.join(",", s);
+            singleList.add(joined);
+        }
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(Common.uid).update("ssb_list", singleList);
     }
 
     public ArrayList<ArrayList<String>> getArrayList(String key) {
