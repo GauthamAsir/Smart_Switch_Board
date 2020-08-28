@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
 
         binding.shareCodeContainer.setOnClickListener(v -> {
             animateFAB();
-            SharingIsCaringSSB sharingIsCaringSSB = new SharingIsCaringSSB(this, this, adapter);
+            SharingIsCaringSSB sharingIsCaringSSB = new SharingIsCaringSSB(MainActivity.this, MainActivity.this, adapter);
             sharingIsCaringSSB.getting_secret_code();
         });
 
@@ -438,8 +438,8 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(getApplicationContext(), "Please Scan valid QR code", Toast.LENGTH_SHORT).show();
             } else {
                 if (result.getContents().contains("https://smart.switch.board/")) {
-                    SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(getApplicationContext()
-                            , this, adapter);
+                    SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(MainActivity.this
+                            , MainActivity.this, adapter);
                     shaing_is_caring.adding_secret_key_from_scaned_qr_copy_paste_deep_link(result.getContents());
                 } else {
                     Toast.makeText(getApplicationContext(), "Please Scan valid QR code", Toast.LENGTH_SHORT).show();
@@ -456,8 +456,8 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == Cam_request_code) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(getApplicationContext(), "Permission Granted!", Toast.LENGTH_SHORT).show();
-                SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(getApplicationContext()
-                        , this, adapter);
+                SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(MainActivity.this
+                        , MainActivity.this, adapter);
                 shaing_is_caring.openScanner();
             } else {
                 Toast.makeText(getApplicationContext(), "Permission Denied! Please Allow Permission.", Toast.LENGTH_SHORT).show();
@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements
 //                adapter.notifyDataSetChanged();
         }
 
-        adapter = new ListAdapterSSB(getApplicationContext(), original_fire_list, original_fire_list.size(), original_name_list);
+        adapter = new ListAdapterSSB(MainActivity.this, original_fire_list, original_fire_list.size(), original_name_list);
         adapter.setCustomButtonListner(this);
         binding.gridview.setAdapter(adapter);
 
