@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements
 
         String uid = Objects.requireNonNull(userPreferences.getString("uid", ""));
 
+        if (!uid.isEmpty()) Common.uid = uid;
+
         sync = userPreferences.getBoolean("sync", false);
         if (sync) {
             binding.gridview.setVisibility(View.GONE);
@@ -161,13 +163,13 @@ public class MainActivity extends AppCompatActivity implements
             String s = bundle.getString("SUCCESS");
             if (s != null) {
                 if (s.equals("SUCCESS")) {
-                    utils.Successful_alertdialog(getApplicationContext());
+                    utils.Successful_alertdialog(MainActivity.this);
                     Toast.makeText(getApplicationContext(), "Connected Successfully!", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         WifiManager wifiManager = (WifiManager) getApplicationContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                         String current_wifi_ssid = wifiManager.getConnectionInfo().getSSID();
                         if (current_wifi_ssid.contains("SSB")) {
-                            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getApplicationContext());
+                            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
                             builder.setTitle("Please Disconnect 'SSB'");
                             builder.setCancelable(false);
                             builder.setPositiveButton("Open WiFi settings", (dialogInterface, i) -> {
