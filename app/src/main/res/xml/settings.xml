@@ -29,6 +29,12 @@
             app:key="delete_account"
             app:title="@string/delete_account" />
 
+        <Preference
+            app:icon="@drawable/ic_baseline_sync_24"
+            app:key="sync"
+            app:summary="@string/sync_summary"
+            app:title="@string/sync" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/misc">

@@ -9,10 +9,201 @@
     tools:openDrawer="start"
     tools:context=".MainActivity">
 
-    <include
-        layout="@layout/app_bar_content"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="@dimen/_0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <RelativeLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?actionBarSize"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:id="@+id/sync_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+                android:padding="@dimen/_12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/you_id_is_connected_to_some_ssb"
+                    android:textSize="@dimen/_32sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/ignore"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_6dp"
+                        android:layout_weight="1"
+                        android:text="@string/ignore"
+                        android:textColor="@android:color/white" />
+
+                    <Button
+                        android:id="@+id/sync"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_6dp"
+                        android:layout_weight="1"
+                        android:text="@string/sync"
+                        android:textColor="@android:color/white" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/not_connected_to_ssb"
+                android:textSize="@dimen/_42sp"
+                android:visibility="gone" />
+
+            <GridView
+                android:id="@+id/gridview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:horizontalSpacing="15dp"
+                android:numColumns="2"
+                android:verticalSpacing="20dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/fab_bts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:gravity="end|center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/new_connection_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/_6dp"
+                        app:cardElevation="@dimen/_6dp"
+                        app:cardUseCompatPadding="true">
+
+                        <TextView
+                            android:id="@+id/fab3_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_6dp"
+                            android:text="@string/new_connection"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textStyle="bold" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <ImageView
+                        android:id="@+id/new_connection"
+                        android:layout_width="@dimen/_40dp"
+                        android:layout_height="@dimen/_40dp"
+                        android:layout_gravity="bottom|end|center_vertical"
+                        android:layout_marginStart="@dimen/_24dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        android:layout_marginEnd="@dimen/_16dp"
+                        android:layout_marginBottom="@dimen/_6dp"
+                        android:contentDescription="@string/share_code"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/wifi_config"
+                        app:tint="@color/colorPrimary" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/share_code_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?selectableItemBackground"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/_6dp"
+                        app:cardElevation="@dimen/_6dp"
+                        app:cardUseCompatPadding="true">
+
+                        <TextView
+                            android:id="@+id/fab2_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_6dp"
+                            android:text="@string/share_code"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textStyle="bold" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <ImageView
+                        android:id="@+id/share_code"
+                        android:layout_width="@dimen/_40dp"
+                        android:layout_height="@dimen/_40dp"
+                        android:layout_gravity="bottom|end|center_vertical"
+                        android:layout_marginStart="@dimen/_24dp"
+                        android:layout_marginTop="@dimen/_6dp"
+                        android:layout_marginEnd="@dimen/_24dp"
+                        android:layout_marginBottom="@dimen/_6dp"
+                        android:contentDescription="@string/share_code"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_baseline_share_24"
+                        app:tint="@color/colorPrimary" />
+
+                </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/wificonfig"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_24dp"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_round_add_24"
+                    app:borderWidth="@dimen/_0dp"
+                    app:elevation="@dimen/_12dp"
+                    app:fabSize="auto"
+                    app:tint="@android:color/white" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

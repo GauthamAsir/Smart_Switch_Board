@@ -93,4 +93,9 @@
     <string name="type_here">Type here!</string>
     <string name="confirmation">Confirmation</string>
     <string name="really_want_to_log_out">Do you really want to Log out ?</string>
+    <string name="restart_app">Restart Application to apply changes</string>
+    <string name="you_id_is_connected_to_some_ssb">Your id is connected to some another SSB</string>
+    <string name="sync">Sync</string>
+    <string name="ignore">Ignore</string>
+    <string name="sync_summary">Sync your previous SSB data. Existing data will be replaced/deleted</string>
 </resources>
