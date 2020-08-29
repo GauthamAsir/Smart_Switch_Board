@@ -130,7 +130,6 @@
     <string name="new_connection_received">New Connection Received!</string>
     <string name="already_added">Already added!</string>
     <string name="share">Share</string>
-    <string name="invite_text">I\'m inviting you to join Smart Swtich Board.\nClick the link https://smart.switch.board/</string>
     <string name="please_scan_valid_qr">Please Scan valid QR code</string>
     <string name="password_changed_recently_warning">Your password has been changed recently, re-login to continue</string>
     <string name="something_went_wrong">Something went wrong</string>

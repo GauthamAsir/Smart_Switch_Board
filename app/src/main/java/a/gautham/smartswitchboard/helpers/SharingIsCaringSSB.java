@@ -325,7 +325,7 @@ public class SharingIsCaringSSB extends Activity {
     public void shareText(String text, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_text) + text);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "I\\'m inviting you to join Smart Swtich Board.\\nClick the link https://smart.switch.board/" + text);
         sendIntent.setType("text/plain");
         Intent shareIntent = Intent.createChooser(sendIntent, null);
         context.startActivity(shareIntent, Bundle.EMPTY);
