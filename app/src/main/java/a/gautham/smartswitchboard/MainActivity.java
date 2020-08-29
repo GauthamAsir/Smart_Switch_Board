@@ -536,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements
 //                adapter.notifyDataSetChanged();
         }
 
-        adapter = new ListAdapterSSB(MainActivity.this, original_fire_list, original_fire_list.size(), original_name_list);
+        adapter = new ListAdapterSSB(MainActivity.this, original_fire_list, original_name_list);
         adapter.setCustomButtonListner(this);
         binding.gridview.setAdapter(adapter);
 
@@ -571,12 +571,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onButtonClickListner(int position, String value) {
+    public void onButtonClickListener(int position, String value) {
 
     }
 
     @Override
-    public void onToggleClickListner(int position, String value, Boolean ans) {
+    public void onToggleClickListener(int position, String value, Boolean ans) {
 
     }
 

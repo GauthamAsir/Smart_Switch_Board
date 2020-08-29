@@ -1,5 +1,6 @@
 package a.gautham.smartswitchboard.helpers;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -10,13 +11,10 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -32,7 +30,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -49,19 +46,15 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
     public Context context;
     customButtonListener customListner;
     FirebaseDatabase firebase_realtime_db = FirebaseDatabase.getInstance();
-    AlertDialog alertDialog_sharing_secret_code;
     private ArrayList<String> data;
-    private int counts;
     private ArrayList<String> ori_relay_name;
+    private Common common = new Common();
 
-    public ListAdapterSSB(@NonNull Context context, ArrayList<String> resource, int count_i, ArrayList<String> names) {
+    public ListAdapterSSB(@NonNull Context context, ArrayList<String> resource, ArrayList<String> names) {
         super(context, R.layout.item_layout, resource);
         this.data = resource;
         this.context = context;
-        this.counts = count_i;
         this.ori_relay_name = names;
-//        firebase_realtime_db.setPersistenceEnabled(true);
-
     }
 
     public void setCustomButtonListner(customButtonListener listener) {
@@ -84,14 +77,9 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.toggleButton.setText("Please Wait");
+        viewHolder.toggleButton.setText(R.string.please_wait);
         viewHolder.toggleButton.setEnabled(false);
-//        final String fire_rt_db_secret_key = getItem(position);
         final String fire_rt_db_secret_key = data.get(position);
-//        String[] AA = fire_rt_db_secret_key.split("/");//Finding Relay name
-//        String relay_name = AA[AA.length - 1];
-//        viewHolder.text.setText(relay_name);
-
 
         final DatabaseReference fire_db_reference = firebase_realtime_db.getReference(fire_rt_db_secret_key);
         fire_db_reference.addValueEventListener(new ValueEventListener() {
@@ -110,9 +98,8 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                     String value = snapshot.getValue(String.class);
                     viewHolder.toggleButton.setEnabled(false);
                     if (value != null) {
-//                        viewHolder.toggleButton.setChecked(value);
                         if (value.contains("Deleted")) {
-                            viewHolder.toggleButton.setText("Deleted");
+                            viewHolder.toggleButton.setText(R.string.deleted);
                         }
                     }
                 }
@@ -126,53 +113,39 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
 
         viewHolder.text.setText(ori_relay_name.get(position));
 
-        viewHolder.toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (customListner != null) {
-                    DatabaseReference fire_db_reference = firebase_realtime_db.getReference(fire_rt_db_secret_key);
-                    fire_db_reference.setValue(b);
+        viewHolder.toggleButton.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (customListner != null) {
+                DatabaseReference fire_db_reference1 = firebase_realtime_db.getReference(fire_rt_db_secret_key);
+                fire_db_reference1.setValue(b);
+            }
+        });
+
+        viewHolder.toggleButton.setOnClickListener(view -> {
+            fire_rt_value_cross_check AA = new fire_rt_value_cross_check();
+            AA.execute();
+        });
+
+        viewHolder.imageView.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(context, view);
+            popupMenu.getMenuInflater().inflate(R.menu.popup_setting, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                switch (String.valueOf(menuItem.getTitle())) {
+                    case "Edit":
+                        change_name_of_relay(fire_rt_db_secret_key, String.valueOf(viewHolder.text.getText()), viewHolder.text);
+                        break;
+                    case "Share":
+                        SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(context, null);
+                        shaing_is_caring.sharing_secret_code(fire_rt_db_secret_key);
+                        break;
+                    case "Delete":
+                        delete_name_of_raley(fire_rt_db_secret_key);
+                        break;
+                    default:
+                        break;
                 }
-            }
-        });
-
-        viewHolder.toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Toast.makeText(context,"Someone clicked",Toast.LENGTH_SHORT).show();
-                fire_rt_value_cross_check AA = new fire_rt_value_cross_check();
-                AA.execute();
-            }
-        });
-
-        viewHolder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                PopupMenu popupMenu = new PopupMenu(context, view);
-                popupMenu.getMenuInflater().inflate(R.menu.popup_setting, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-//                        Toast.makeText(context,menuItem.getTitle() + " and " + fire_rt_db_secret_key + " and name : " + viewHolder.text.getText(),Toast.LENGTH_SHORT).show();
-                        switch (String.valueOf(menuItem.getTitle())) {
-                            case "Edit":
-                                change_name_of_relay(fire_rt_db_secret_key, String.valueOf(viewHolder.text.getText()), viewHolder.text);
-                                break;
-                            case "Share":
-                                SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(context, null);
-                                shaing_is_caring.sharing_secret_code(fire_rt_db_secret_key);
-                                break;
-                            case "Delete":
-                                delete_name_of_raley(fire_rt_db_secret_key);
-                                break;
-                            default:
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                popupMenu.show();
-            }
+                return false;
+            });
+            popupMenu.show();
         });
 
         return convertView;
@@ -189,12 +162,6 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
     }
 
     public Boolean check_check() {
-//        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo nf = cm.getActiveNetworkInfo();
-//        boolean isConnected = nf != null &&
-//                nf.isConnectedOrConnecting();
-//        return isConnected;
-        /////////////////////
         boolean isOnline = false;
         try {
             ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -213,48 +180,39 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(input);
         final EditText editText = input.findViewById(R.id.edit_text);
-//        builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int num) {
-                if (editText.length() > 1) {
-                    textView.setText(editText.getText());
-                    String[] temp = index.split("/");
-                    String getting_secret_key = temp[0];
-                    ///getting saved list
-                    ArrayList<ArrayList<String>> saved_fire_db = getArrayList("fire_db_temp");
-                    ///Changing name
-                    for (int i = 0; i < saved_fire_db.size(); i++) {
-                        if (saved_fire_db.get(i).get(0).equals(getting_secret_key)) {
-//                            Toast.makeText(context, "Found", Toast.LENGTH_LONG).show();
-                            int AA = saved_fire_db.get(i).indexOf(original_name);
-                            saved_fire_db.get(i).set(AA, String.valueOf(editText.getText()));
-                        }
+        builder.setPositiveButton(R.string.ok, (dialogInterface, num) -> {
+            if (editText.length() > 1) {
+                textView.setText(editText.getText());
+                String[] temp = index.split("/");
+                String getting_secret_key = temp[0];
+
+                ArrayList<ArrayList<String>> saved_fire_db = getArrayList("fire_db_temp");
+
+                for (int i = 0; i < saved_fire_db.size(); i++) {
+                    if (saved_fire_db.get(i).get(0).equals(getting_secret_key)) {
+
+                        int AA = saved_fire_db.get(i).indexOf(original_name);
+                        saved_fire_db.get(i).set(AA, String.valueOf(editText.getText()));
                     }
-                    saveArrayList(saved_fire_db, "fire_db_temp");
-                    Toast.makeText(context, "Title changed successfully!", Toast.LENGTH_LONG).show();
-//                    also change Original list and name in ListAdpter hre.
-                    ori_relay_name.clear();
-                    for (int i = 0; i < saved_fire_db.size(); i++) {
-                        int sizeee = saved_fire_db.get(i).size();
-                        for (int j = 1; j < sizeee; j++) {
-                            if (!saved_fire_db.get(i).get(j).equals("BLANK")) {
-                                ori_relay_name.add(saved_fire_db.get(i).get(j));
-                            }
-                        }
-                    }
-                    notifyDataSetChanged();
-                } else {
-                    Toast.makeText(context, "Please enter valid text", Toast.LENGTH_LONG).show();
                 }
+                common.saveArrayList(context, saved_fire_db, "fire_db_temp");
+                Toast.makeText(context, R.string.title_changed, Toast.LENGTH_LONG).show();
+
+                ori_relay_name.clear();
+                for (int i = 0; i < saved_fire_db.size(); i++) {
+                    int sizeee = saved_fire_db.get(i).size();
+                    for (int j = 1; j < sizeee; j++) {
+                        if (!saved_fire_db.get(i).get(j).equals("BLANK")) {
+                            ori_relay_name.add(saved_fire_db.get(i).get(j));
+                        }
+                    }
+                }
+                notifyDataSetChanged();
+            } else {
+                Toast.makeText(context, R.string.enter_valid_text, Toast.LENGTH_LONG).show();
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -262,8 +220,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
 
     public void delete_name_of_raley(final String fire_rt_db_secret_key) {
         int size;
-//        String[] AA = new String[0];
-//        boolean[] BB = new boolean[0];
+
         ArrayList<String> AA_array = new ArrayList<>();
         ArrayList<Boolean> BB_array = new ArrayList<>();
 
@@ -278,13 +235,9 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
             if (arrayLists.get(i).get(0).equals(getting_secret_key)) {
                 size = arrayLists.get(i).size();
                 secret_key_which_is_deleted.addAll(arrayLists.get(i));
-//                temp_list_for_deleing = arrayLists.get(i);
-//                AA = new String[size - 1];
-//                BB = new boolean[size - 1];
+
                 for (int j = 1; j < size; j++) {
                     if (!arrayLists.get(i).get(j).equals("BLANK")) {
-//                        AA[j - 1] = arrayLists.get(i).get(j);
-//                        BB[j - 1] = true;
                         AA_array.add(arrayLists.get(i).get(j));
                         BB_array.add(true);
                     }
@@ -296,26 +249,18 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         for (int boi1 = 0; boi1 < BB_array.size(); boi1++) {
             AA[boi1] = AA_array.get(boi1);
         }
-        ////
+
         boolean[] BB = new boolean[BB_array.size()];
         for (int boi = 0; boi < BB_array.size(); boi++) {
             BB[boi] = BB_array.get(boi);
         }
 
-//        Toast.makeText(context,"Names :" + Arrays.toString(AA),Toast.LENGTH_SHORT).show();
-//        Toast.makeText(context,"States :" + Arrays.toString(BB),Toast.LENGTH_SHORT).show();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select Switches:");
+        builder.setTitle(R.string.select_switches);
 
         final String[] finalAA = AA;
         final boolean[] finalBB = BB;
-        builder.setMultiChoiceItems(AA, BB, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                finalBB[i] = b;
-            }
-        });
+        builder.setMultiChoiceItems(AA, BB, (dialogInterface, i, b) -> finalBB[i] = b);
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             int true_counts;
             int false_counts;
@@ -334,7 +279,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                 if (true_counts == finalBB.length) {
 
                     arrayLists.remove(secret_key_which_is_deleted);
-                    saveArrayList(arrayLists, "fire_db_temp");
+                    common.saveArrayList(context, arrayLists, "fire_db_temp");
 
                     ori_relay_name.clear();
                     data.clear();
@@ -350,25 +295,11 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                     notifyDataSetChanged();
                 }
                 if (false_counts == finalBB.length) {
-                    Toast.makeText(context, "Please select switches!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.please_select_switches, Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-//        String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
-//        boolean[] checkedItems = {true, false, false, true, false};
-//        builder.setMultiChoiceItems(animals, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-//                // user checked or unchecked a box
-//            }
-//        });
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -407,26 +338,6 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         activity.finish();
     }
 
-    ///////////////////
-    public void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
-        SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        editor.putString(key, json);
-        editor.apply();
-        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
-        }.getType();
-        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
-        ArrayList<String> singleList = new ArrayList<>();
-        for (ArrayList<String> s : ssbList) {
-            String joined = TextUtils.join(",", s);
-            singleList.add(joined);
-        }
-        FirebaseFirestore.getInstance().collection("Users")
-                .document(Common.uid).update("ssb_list", singleList);
-    }
-
     public ArrayList<ArrayList<String>> getArrayList(String key) {
         SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
         Gson gson = new Gson();
@@ -436,34 +347,10 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         return gson.fromJson(json, type);
     }
 
-    /////////////////////////////////////
-    private String String_to_hexa(String name) {
-        StringBuilder sb = new StringBuilder();
-
-        char[] ch = name.toCharArray();
-        for (char c : ch) {
-            String hexString = Integer.toHexString(c);
-            sb.append(hexString);
-        }
-//        final String result = sb.toString();
-        return sb.toString();
-    }
-
-    private String Hexa_to_string(String name) {
-        String result = "";
-        char[] charArray = name.toCharArray();
-        for (int i = 0; i < charArray.length; i = i + 2) {
-            String st = "" + charArray[i] + "" + charArray[i + 1];
-            char ch = (char) Integer.parseInt(st, 16);
-            result = result + ch;
-        }
-        return result;
-    }
-
     public interface customButtonListener {
-        void onButtonClickListner(int position, String value);
+        void onButtonClickListener(int position, String value);
 
-        void onToggleClickListner(int position, String value, Boolean ans);
+        void onToggleClickListener(int position, String value, Boolean ans);
     }
 
     public static class ViewHolder {
@@ -472,6 +359,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         ImageView imageView;
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class fire_rt_value_cross_check extends AsyncTask<String, String, String> {
         ProgressDialog p;
 
@@ -503,22 +391,15 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                 p.dismiss();
             } else {
                 p.dismiss();
-                Toast.makeText(context, "No internet connectivity available", Toast.LENGTH_SHORT).show();
+                Common.toastShort(context, context.getString(R.string.no_interent), 0, 0);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 alertDialogBuilder.setTitle("No Internet");
-                alertDialogBuilder.setMessage("Response will automatically send once internet connectivity is established");
-                alertDialogBuilder.setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-//                                        Toast.makeText(context,"You clicked yes button",Toast.LENGTH_LONG).show();
-                                arg0.cancel();
-                            }
-                        });
+                alertDialogBuilder.setMessage(R.string.response_will_be_sent_once_interenet);
+                alertDialogBuilder.setPositiveButton(R.string.ok,
+                        (arg0, arg1) -> arg0.cancel());
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
             }
         }
     }
-    ///////////////////
 }

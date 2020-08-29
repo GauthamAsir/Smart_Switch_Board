@@ -1,11 +1,11 @@
 package a.gautham.smartswitchboard.helpers;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -53,9 +53,8 @@ public class NewConnectionIsAwesome extends Activity {
     public Context context;
     public Activity activity;
     public ListAdapterSSB adapter;
-    public int Loca_request_code = 111;
+    public int localRequestCode = 111;
     AlertDialog alertDialog_wifi_yes_no;
-
 
     public NewConnectionIsAwesome(Context our_context, Activity our_activity, ListAdapterSSB our_adapter) {
         this.context = our_context;
@@ -71,20 +70,13 @@ public class NewConnectionIsAwesome extends Activity {
         Button wifi_yes = input.findViewById(R.id.wifi_yes);
         Button wifi_no = input.findViewById(R.id.wifi_no);
 
-        wifi_yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Toast.makeText(context,"Please stay connected to Wi-Fi",Toast.LENGTH_SHORT).show();
-                Connecting_to_SSB();
-                alertDialog_wifi_yes_no.dismiss();
-            }
+        wifi_yes.setOnClickListener(view -> {
+            Connecting_to_SSB();
+            alertDialog_wifi_yes_no.dismiss();
         });
-        wifi_no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, "This Feature will be available soon.", Toast.LENGTH_SHORT).show();
-                alertDialog_wifi_yes_no.dismiss();
-            }
+        wifi_no.setOnClickListener(view -> {
+            Toast.makeText(context, R.string.this_feature_will_available_soon, Toast.LENGTH_SHORT).show();
+            alertDialog_wifi_yes_no.dismiss();
         });
         alertDialog_wifi_yes_no = builder.create();
         alertDialog_wifi_yes_no.show();
@@ -93,7 +85,7 @@ public class NewConnectionIsAwesome extends Activity {
     private void Connecting_to_SSB() {
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Loca_request_code);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, localRequestCode);
         } else {
             if (!getLocationstate() || !getWifistate() || getMobileDataState()) {
                 if (!getLocationstate()) {
@@ -104,43 +96,61 @@ public class NewConnectionIsAwesome extends Activity {
                     Show_mobile_data_alert_dialog();
                 }
             } else {
-                Toast.makeText(context, "Make sure 'Smart Switch Board' is powered up!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.make_sure_smart_switch_powered_up, Toast.LENGTH_SHORT).show();
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     LayoutInflater layoutInflater = LayoutInflater.from(context);
                     View input = layoutInflater.inflate(R.layout.wifi_intent, null);
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setView(input);
-                    builder.setTitle("Auto-detect is not supported in this android version.");
-                    builder.setPositiveButton("Open WiFi settings", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                    builder.setTitle(R.string.auto_detect_not_supported);
+                    builder.setPositiveButton(R.string.open_wifi_settings, (dialogInterface, i) -> {
 
-                            if (getLocationstate() && !getMobileDataState()) {
-                                context.startActivity(new Intent(Settings.Panel.ACTION_WIFI));
-                                Scan_and_connect_to_SSB scan_and_connect_to_ssb = new Scan_and_connect_to_SSB();
-                                scan_and_connect_to_ssb.execute();
-                            } else {
-                                if (!getLocationstate()) {
-                                    Show_location_alert_dialog();
-                                } else if (getMobileDataState()) {
-                                    Show_mobile_data_alert_dialog();
-                                }
-
+                        if (getLocationstate() && !getMobileDataState()) {
+                            context.startActivity(new Intent(Settings.Panel.ACTION_WIFI));
+                            Scan_and_connect_to_SSB scan_and_connect_to_ssb = new Scan_and_connect_to_SSB();
+                            scan_and_connect_to_ssb.execute();
+                        } else {
+                            if (!getLocationstate()) {
+                                Show_location_alert_dialog();
+                            } else if (getMobileDataState()) {
+                                Show_mobile_data_alert_dialog();
                             }
-                            dialogInterface.dismiss();
+
                         }
+                        dialogInterface.dismiss();
                     });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("This Android version supports Auto-Scan!");
-                    builder.setMessage("Power up Smart Swtich Board! \n 'Auto-Scan': Automatically detects and connects to available Smart Switch Board.");
-                    builder.setPositiveButton("Auto-Scan", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                    builder.setTitle(R.string.this_version_no_supports_auto_scan);
+                    builder.setMessage(R.string.power_up_ssb_auto_detects);
+                    builder.setPositiveButton(R.string.auto_scan, (dialogInterface, i) -> {
+                        if (getLocationstate() && getLocationstate() && !getMobileDataState()) {
+                            Scan_and_connect_to_SSB scan_and_connect_to_ssb = new Scan_and_connect_to_SSB();
+                            scan_and_connect_to_ssb.execute();
+                        } else {
+                            if (!getLocationstate()) {
+                                Show_location_alert_dialog();
+                            } else if (!getWifistate()) {
+                                Show_wifi_alert_dialog();
+                            } else if (getMobileDataState()) {
+                                Show_mobile_data_alert_dialog();
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+                    builder.setNeutralButton(R.string.manual_mode, (dialogInterface, i) -> {
+                        LayoutInflater layoutInflater = LayoutInflater.from(context);
+                        View input = layoutInflater.inflate(R.layout.wifi_intent, null);
+                        final AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                        builder1.setView(input);
+                        builder1.setTitle(R.string.manual_mode);
+                        builder1.setPositiveButton(R.string.open_wifi_settings, (dialogInterface1, i1) -> {
+
                             if (getLocationstate() && getLocationstate() && !getMobileDataState()) {
+                                context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                                 Scan_and_connect_to_SSB scan_and_connect_to_ssb = new Scan_and_connect_to_SSB();
                                 scan_and_connect_to_ssb.execute();
                             } else {
@@ -152,46 +162,10 @@ public class NewConnectionIsAwesome extends Activity {
                                     Show_mobile_data_alert_dialog();
                                 }
                             }
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-                    builder.setNeutralButton("Manual mode", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            LayoutInflater layoutInflater = LayoutInflater.from(context);
-                            View input = layoutInflater.inflate(R.layout.wifi_intent, null);
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setView(input);
-                            builder.setTitle("Manual mode");
-                            builder.setPositiveButton("Open WiFi settings", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-
-                                    if (getLocationstate() && getLocationstate() && !getMobileDataState()) {
-//                                        context.startActivity(new Intent(Settings.Panel.ACTION_WIFI));
-                                        context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                                        Scan_and_connect_to_SSB scan_and_connect_to_ssb = new Scan_and_connect_to_SSB();
-                                        scan_and_connect_to_ssb.execute();
-                                    } else {
-                                        if (!getLocationstate()) {
-                                            Show_location_alert_dialog();
-                                        } else if (!getWifistate()) {
-                                            Show_wifi_alert_dialog();
-                                        } else if (getMobileDataState()) {
-                                            Show_mobile_data_alert_dialog();
-                                        }
-                                    }
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
-                        }
+                            dialogInterface1.dismiss();
+                        });
+                        AlertDialog alertDialog = builder1.create();
+                        alertDialog.show();
                     });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
@@ -209,9 +183,9 @@ public class NewConnectionIsAwesome extends Activity {
         try {
             TelephonyManager telephonyService = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             Method getMobileDataEnabledMethod = Objects.requireNonNull(telephonyService).getClass().getDeclaredMethod("getDataEnabled");
-            return (boolean) (Boolean) getMobileDataEnabledMethod.invoke(telephonyService);
+            return (boolean) (Boolean) Objects.requireNonNull(getMobileDataEnabledMethod.invoke(telephonyService));
         } catch (Exception ex) {
-            Log.e("MainActivity", "Error getting mobile data state", ex);
+            Log.e("MainActivity", getString(R.string.error_getting_mobile_data_state), ex);
         }
         return false;
     }
@@ -223,45 +197,29 @@ public class NewConnectionIsAwesome extends Activity {
 
     public void Show_location_alert_dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Please Turn on Location.");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setTitle(R.string.please_turn_on_location);
+        builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     public void Show_wifi_alert_dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Please Turn on Wi-Fi.");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setTitle(R.string.please_turn_on_wifi);
+        builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     public void Show_mobile_data_alert_dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Attention! Please Disable Mobile Data");
-        builder.setMessage("In order to Connect to Smart Switch Board, your 'mobile data' must be disabled.");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setTitle(R.string.please_disable_mobile_data);
+        builder.setMessage(R.string.mobile_data_should_be_disabled_details);
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
-    //////////////////////////////////////////
     private void Display_available_wifi() {
         final List<ScanResult> scanResultList;
 
@@ -269,7 +227,7 @@ public class NewConnectionIsAwesome extends Activity {
         scanResultList = wifiManager.getScanResults();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select your Wi-Fi:");
+        builder.setTitle(R.string.select_your_wifi);
 
         String[] wifi_names = new String[scanResultList.size()];
 
@@ -277,45 +235,34 @@ public class NewConnectionIsAwesome extends Activity {
             wifi_names[i] = i + 1 + ". " + scanResultList.get(i).SSID;
         }
 
-        builder.setItems(wifi_names, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (getLocationstate() && getWifistate() && !getMobileDataState()) {
-                    Connect_to_user_wifi(scanResultList.get(i).SSID);
-                    dialogInterface.dismiss();
-                } else {
-                    if (!getLocationstate()) {
-                        Show_location_alert_dialog();
-                    } else if (!getWifistate()) {
-                        Show_wifi_alert_dialog();
-                    } else if (getMobileDataState()) {
-                        Show_mobile_data_alert_dialog();
-                    }
+        builder.setItems(wifi_names, (dialogInterface, i) -> {
+            if (getLocationstate() && getWifistate() && !getMobileDataState()) {
+                Connect_to_user_wifi(scanResultList.get(i).SSID);
+                dialogInterface.dismiss();
+            } else {
+                if (!getLocationstate()) {
+                    Show_location_alert_dialog();
+                } else if (!getWifistate()) {
+                    Show_wifi_alert_dialog();
+                } else if (getMobileDataState()) {
+                    Show_mobile_data_alert_dialog();
                 }
             }
         });
 
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
 
-        builder.setNeutralButton("Scan Wi-Fi", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (getLocationstate() && getWifistate() && !getMobileDataState()) {
-                    Display_available_wifi();
-                    dialogInterface.dismiss();
-                } else {
-                    if (!getLocationstate()) {
-                        Show_location_alert_dialog();
-                    } else if (!getWifistate()) {
-                        Show_wifi_alert_dialog();
-                    } else if (getMobileDataState()) {
-                        Show_mobile_data_alert_dialog();
-                    }
+        builder.setNeutralButton(R.string.scan_wifi, (dialogInterface, i) -> {
+            if (getLocationstate() && getWifistate() && !getMobileDataState()) {
+                Display_available_wifi();
+                dialogInterface.dismiss();
+            } else {
+                if (!getLocationstate()) {
+                    Show_location_alert_dialog();
+                } else if (!getWifistate()) {
+                    Show_wifi_alert_dialog();
+                } else if (getMobileDataState()) {
+                    Show_mobile_data_alert_dialog();
                 }
             }
         });
@@ -329,39 +276,29 @@ public class NewConnectionIsAwesome extends Activity {
         View input = layoutInflater.inflate(R.layout.wifi_log_in, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(input);
-        builder.setTitle("Enter WiFi credentials:");
+        builder.setTitle(R.string.enter_wifi_credentials);
         final TextView textView = input.findViewById(R.id.ssid_login);
         textView.setText(wifi_name);
         final EditText editText = input.findViewById(R.id.pass_login);
-        builder.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (getLocationstate() && getWifistate() && !getMobileDataState()) {
-                    Sending_wifi_ssid_pass_to_ssb sending_wifi_ssid_pass_to_ssb = new Sending_wifi_ssid_pass_to_ssb();
-                    sending_wifi_ssid_pass_to_ssb.execute(textView.getText().toString(), editText.getText().toString());
-//                    Toast.makeText(context,"Password is :" + editText.getText(),Toast.LENGTH_SHORT).show();
-                } else {
-                    if (!getLocationstate()) {
-                        Show_location_alert_dialog();
-                    } else if (!getWifistate()) {
-                        Show_wifi_alert_dialog();
-                    } else if (getMobileDataState()) {
-                        Show_mobile_data_alert_dialog();
-                    }
+        builder.setPositiveButton(R.string.next, (dialogInterface, i) -> {
+            if (getLocationstate() && getWifistate() && !getMobileDataState()) {
+                Sending_wifi_ssid_pass_to_ssb sending_wifi_ssid_pass_to_ssb = new Sending_wifi_ssid_pass_to_ssb();
+                sending_wifi_ssid_pass_to_ssb.execute(textView.getText().toString(), editText.getText().toString());
+            } else {
+                if (!getLocationstate()) {
+                    Show_location_alert_dialog();
+                } else if (!getWifistate()) {
+                    Show_wifi_alert_dialog();
+                } else if (getMobileDataState()) {
+                    Show_mobile_data_alert_dialog();
                 }
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
-    ///////////////////
     public void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
         SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -390,7 +327,7 @@ public class NewConnectionIsAwesome extends Activity {
         return gson.fromJson(json, type);
     }
 
-    ////////////////////////////
+    @SuppressLint("StaticFieldLeak")
     public class Scan_and_connect_to_SSB extends AsyncTask<String, String, String> {
         ProgressDialog p;
 
@@ -499,6 +436,7 @@ public class NewConnectionIsAwesome extends Activity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class Sending_wifi_ssid_pass_to_ssb extends AsyncTask<String, String, ArrayList<String>> {
         ProgressDialog p;
 
@@ -514,30 +452,26 @@ public class NewConnectionIsAwesome extends Activity {
 
         @Override
         protected ArrayList<String> doInBackground(String... strings) {
-            ArrayList<String> listt = new ArrayList<String>();
+            ArrayList<String> listt = new ArrayList<>();
 
             if (getLocationstate() && getWifistate() && !getMobileDataState()) {
                 OkHttpClient client = new OkHttpClient();
-                String relay_find = "";
-                String our_unique_code = "";
+                String relay_find;
+                String our_unique_code;
                 String unid_code = String.valueOf(UUID.randomUUID());
 
-
                 try {
-                    ///////Getting Version of Smart Switch board
-//                String url = "http://192.168.4.1/setting?ssid=Yashhh&pass=87654321";
                     String url = "http://192.168.4.1";
                     Log.d("JSON", "URL: " + url);
                     Request request = new Request.Builder()
                             .url(url)
                             .build();
                     Response response = client.newCall(request).execute();
-                    relay_find = String.valueOf(response.body().source().readUtf8());
+                    relay_find = String.valueOf(Objects.requireNonNull(response.body()).source().readUtf8());
                     response.close();
 
-                    //////////Sending SSID, pass and unique code to hardware
                     String url2 = "http://192.168.4.1/setting?ssid=" + strings[0] + "&pass=" + strings[1] + "&uuid=" + unid_code;
-//                String url = "http://192.168.4.1:80";
+
                     Log.d("JSON", "URL: " + url2);
                     Request request2 = new Request.Builder()
                             .url(url2)
@@ -554,10 +488,8 @@ public class NewConnectionIsAwesome extends Activity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return listt;
-            } else {
-                return listt;
             }
+            return listt;
         }
 
         @Override
@@ -602,7 +534,7 @@ public class NewConnectionIsAwesome extends Activity {
                             .setIsAppInteractionRequired(true) // Optional (Needs location permission)
                             .build();
 
-                    List<WifiNetworkSuggestion> suggestionsList = new ArrayList<WifiNetworkSuggestion>();
+                    List<WifiNetworkSuggestion> suggestionsList = new ArrayList<>();
                     suggestionsList.add(suggestion);
                     WifiManager wifiManager_our = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     wifiManager_our.removeNetworkSuggestions(suggestionsList);
@@ -617,8 +549,8 @@ public class NewConnectionIsAwesome extends Activity {
                     WifiManager wifiManager_temp = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);//remember id
                     int netId_temp = wifiManager_temp.addNetwork(wifiConfig_temp);
                     wifiManager_temp.removeNetwork(netId_temp);
-                    int netIdd_temp = wifiManager_temp.addNetwork(wifiConfig_temp);
                     wifiManager_temp.disconnect();
+
                     //////////////Connecting to user WiFi router
                     WifiConfiguration wifiConfig = new WifiConfiguration();
                     String ssid = list.get(2);
@@ -641,7 +573,7 @@ public class NewConnectionIsAwesome extends Activity {
 
                 adapter.Updating_list_adapter();
             } else {
-                Toast.makeText(context, "This Smart Switch Board is already configured.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.ssb_is_configured_already, Toast.LENGTH_LONG).show();
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     WifiNetworkSuggestion suggestion = new WifiNetworkSuggestion.Builder()
                             .setSsid("SSB")
@@ -649,7 +581,7 @@ public class NewConnectionIsAwesome extends Activity {
                             .setIsAppInteractionRequired(true) // Optional (Needs location permission)
                             .build();
 
-                    List<WifiNetworkSuggestion> suggestionsList = new ArrayList<WifiNetworkSuggestion>();
+                    List<WifiNetworkSuggestion> suggestionsList = new ArrayList<>();
                     suggestionsList.add(suggestion);
                     WifiManager wifiManager_our = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     wifiManager_our.removeNetworkSuggestions(suggestionsList);
@@ -664,7 +596,6 @@ public class NewConnectionIsAwesome extends Activity {
                     WifiManager wifiManager_temp = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);//remember id
                     int netId_temp = wifiManager_temp.addNetwork(wifiConfig_temp);
                     wifiManager_temp.removeNetwork(netId_temp);
-                    int netIdd_temp = wifiManager_temp.addNetwork(wifiConfig_temp);
                     wifiManager_temp.disconnect();
                 }
                 if (!getLocationstate()) {
@@ -677,7 +608,7 @@ public class NewConnectionIsAwesome extends Activity {
             }
         }
     }
-/////////////////
+
 }
 
 

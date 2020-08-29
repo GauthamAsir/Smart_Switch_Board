@@ -35,6 +35,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.MainActivity;
@@ -59,7 +60,7 @@ public class SharingIsCaringSSB extends Activity {
         this.activity = foreign_activity;
     }
 
-    ///////////////////////////////////////////////////////GETTING SECRET KEYS METHOD SECTION
+    //GETTING SECRET KEYS METHOD SECTION
     public void getting_secret_code() {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View input = layoutInflater.inflate(R.layout.getting_secret_code_layout, null);
@@ -68,63 +69,45 @@ public class SharingIsCaringSSB extends Activity {
         Button scan_qr_btn = input.findViewById(R.id.scan_qr);
         Button copy_paste_qr_btn = input.findViewById(R.id.copy_paste);
 
-        scan_qr_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog_getting_secret_code.dismiss();
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-//                    Toast.makeText(context,"Permission Denied! Please Allow Permission.",Toast.LENGTH_SHORT).show();
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, Cam_request_code);
-                } else {
-                    openScanner();
-                }
+        scan_qr_btn.setOnClickListener(view -> {
+            alertDialog_getting_secret_code.dismiss();
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, Cam_request_code);
+            } else {
+                openScanner();
             }
         });
 
-        copy_paste_qr_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog_getting_secret_code.dismiss();
-                LayoutInflater layoutfor_copypaste = LayoutInflater.from(context);
-                View copypaste_input = layoutfor_copypaste.inflate(R.layout.copy_paste_sharing_layout, null);
-                AlertDialog.Builder copy_paste = new AlertDialog.Builder(context);
-                copy_paste.setView(copypaste_input);
-                final EditText copy_paste_edit_text = copypaste_input.findViewById(R.id.copy_paste_edit_text);
+        copy_paste_qr_btn.setOnClickListener(view -> {
+            alertDialog_getting_secret_code.dismiss();
+            LayoutInflater layoutfor_copypaste = LayoutInflater.from(context);
+            View copypaste_input = layoutfor_copypaste.inflate(R.layout.copy_paste_sharing_layout, null);
+            AlertDialog.Builder copy_paste = new AlertDialog.Builder(context);
+            copy_paste.setView(copypaste_input);
+            final EditText copy_paste_edit_text = copypaste_input.findViewById(R.id.copy_paste_edit_text);
 
-                ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                try {
-                    final String clip = clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
-                    if (clip.contains("https://smart.switch.board/")) {
-                        Toast.makeText(context, "Auto Copied!", Toast.LENGTH_LONG).show();
-                        copy_paste_edit_text.setText(clip);
-                    }
-                } catch (NullPointerException n) {
-                    Log.d("NULL", String.valueOf(n));
+            ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            try {
+                final String clip = Objects.requireNonNull(clipboardManager.getPrimaryClip()).getItemAt(0).getText().toString();
+                if (clip.contains("https://smart.switch.board/")) {
+                    Toast.makeText(context, "Auto Copied!", Toast.LENGTH_LONG).show();
+                    copy_paste_edit_text.setText(clip);
                 }
-
-
-                copy_paste.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (copy_paste_edit_text.getText().toString().contains("https://smart.switch.board/")) {
-//                            String[] temp_list = copy_paste_edit_text.getText().toString().split("https://smart.switch.board/");
-//                            String ciper_text = temp_list[temp_list.length - 1];
-                            adding_secret_key_from_scaned_qr_copy_paste_deep_link(copy_paste_edit_text.getText().toString());
-                        } else {
-                            Toast.makeText(context, "Please enter valid sharecode", Toast.LENGTH_LONG).show();
-                        }
-                        dialogInterface.dismiss();
-                    }
-                });
-                copy_paste.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                AlertDialog alertDialog = copy_paste.create();
-                alertDialog.show();
+            } catch (NullPointerException n) {
+                Log.d("NULL", String.valueOf(n));
             }
+
+            copy_paste.setPositiveButton(R.string.next, (dialogInterface, i) -> {
+                if (copy_paste_edit_text.getText().toString().contains(getString(R.string.app_url))) {
+                    adding_secret_key_from_scaned_qr_copy_paste_deep_link(copy_paste_edit_text.getText().toString());
+                } else {
+                    Toast.makeText(context, R.string.enter_valid_sharecode, Toast.LENGTH_LONG).show();
+                }
+                dialogInterface.dismiss();
+            });
+            copy_paste.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
+            AlertDialog alertDialog = copy_paste.create();
+            alertDialog.show();
         });
         alertDialog_getting_secret_code = builder.create();
         alertDialog_getting_secret_code.show();
@@ -147,81 +130,48 @@ public class SharingIsCaringSSB extends Activity {
         if (arrayLists == null || arrayLists.isEmpty()) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("New Connection Received!");
+            builder.setTitle(R.string.new_connection_received);
             builder.setCancelable(false);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
+            builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
 
-                    saveArrayList(if_array_is_null, "fire_db_temp");
-//                    Toast.makeText(context,"Added Successfully!",Toast.LENGTH_SHORT).show();
+                saveArrayList(if_array_is_null, "fire_db_temp");
 
-                    Intent intent = new Intent(context, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("SUCCESS", "SUCCESS");
-                    context.startActivity(intent);
-                    Activity activity = (Activity) context;
-                    activity.finish();
+                Intent intent = new Intent(context, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("SUCCESS", "SUCCESS");
+                context.startActivity(intent);
+                Activity activity = (Activity) context;
+                activity.finish();
 
-//                    adapter.Updating_list_adapter();
-
-                    dialogInterface.dismiss();
-                }
+                dialogInterface.dismiss();
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            });
+            builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         } else {
             boolean temp_state = false;
             for (int i = 0; i < arrayLists.size(); i++) {
                 if (arrayLists.get(i).get(0).equals(yet_to_add_array.get(0))) {
-                    Toast.makeText(context, "Already added!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.already_added, Toast.LENGTH_SHORT).show();
                     temp_state = true;
                 }
             }
 
             if (!temp_state) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("New Connection Received!");
+                builder.setTitle(R.string.new_connection_received);
                 builder.setCancelable(false);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
 
-                        arrayLists.add(yet_to_add_array);
-                        saveArrayList(arrayLists, "fire_db_temp");
-//                        Toast.makeText(context,"Added Successfully!",Toast.LENGTH_SHORT).show();
+                    arrayLists.add(yet_to_add_array);
+                    saveArrayList(arrayLists, "fire_db_temp");
 
-//                        ori_relay_name.clear();
-//                        data.clear();
-//                        for (int z = 0; z < arrayLists.size(); z++){
-//                            int sizeee = arrayLists.get(z).size();
-//                            for (int y = 1; y < sizeee; y++){
-//                                if (!arrayLists.get(z).get(y).equals("BLANK")) {
-//                                    data.add(arrayLists.get(z).get(0) + "/" + "Switch : " + String.valueOf(y));
-//                                    ori_relay_name.add(arrayLists.get(z).get(y));
-//                                }
-//                            }
-//                        }
-//                        notifyDataSetChanged();
+                    adapter.Updating_list_adapter();
 
-                        adapter.Updating_list_adapter();
-
-                        dialogInterface.dismiss();
-                    }
+                    dialogInterface.dismiss();
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
+                builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
             }
@@ -229,7 +179,6 @@ public class SharingIsCaringSSB extends Activity {
     }
 
     public void openScanner() {
-//        new IntentIntegrator(this).initiateScan();
         IntentIntegrator intentIntegrator = new IntentIntegrator((Activity) context);
         intentIntegrator.setOrientationLocked(true);
         intentIntegrator.setBeepEnabled(false);
@@ -239,8 +188,7 @@ public class SharingIsCaringSSB extends Activity {
         intentIntegrator.initiateScan();
     }
 
-
-    ////////////////////////////////////////////////////////Sharing Secrets keys to others
+    //Sharing Secrets keys to others
     protected void sharing_secret_code(String index) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -257,29 +205,21 @@ public class SharingIsCaringSSB extends Activity {
         ArrayList<String> temp_array = new ArrayList<>();
         for (int i = 0; i < arrayLists.size(); i++) {
             if (arrayLists.get(i).get(0).equals(getting_secret_key)) {
-//                Toast.makeText(context,String.valueOf(saved_fire_db.get(i)),Toast.LENGTH_LONG).show();
-//                share_string = String.valueOf(saved_fire_db.get(i));
                 temp_array = arrayLists.get(i);
             }
         }
-        ////////////////
+
         int size;
-//        String[] AA = new String[0];
-//        boolean[] BB = new boolean[0];
+
         ArrayList<String> AA_array = new ArrayList<>();
         ArrayList<Boolean> BB_array = new ArrayList<>();
 
         for (int i = 0; i < arrayLists.size(); i++) {
             if (arrayLists.get(i).get(0).equals(getting_secret_key)) {
                 size = arrayLists.get(i).size();
-//                secret_key_which_is_deleted.addAll(arrayLists.get(i));
-//                temp_list_for_deleing = arrayLists.get(i);
-//                AA = new String[size - 1];
-//                BB = new boolean[size - 1];
+
                 for (int j = 1; j < size; j++) {
                     if (!arrayLists.get(i).get(j).equals("BLANK")) {
-//                        AA[j - 1] = arrayLists.get(i).get(j);
-//                        BB[j - 1] = true;
                         AA_array.add(arrayLists.get(i).get(j));
                         BB_array.add(true);
                     }
@@ -291,27 +231,20 @@ public class SharingIsCaringSSB extends Activity {
         for (int boi1 = 0; boi1 < BB_array.size(); boi1++) {
             AA[boi1] = AA_array.get(boi1);
         }
-        ////
         boolean[] BB = new boolean[BB_array.size()];
         for (int boi = 0; boi < BB_array.size(); boi++) {
             BB[boi] = BB_array.get(boi);
         }
 
         AlertDialog.Builder builder_for_sharing = new AlertDialog.Builder(context);
-        builder_for_sharing.setTitle("Select Switches:");
+        builder_for_sharing.setTitle(R.string.select_switches);
 
-        final String[] finalAA = AA;
         final boolean[] finalBB = BB;
-        builder_for_sharing.setMultiChoiceItems(AA, BB, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                finalBB[i] = b;
-            }
-        });
+        builder_for_sharing.setMultiChoiceItems(AA, BB, (dialogInterface, i, b) -> finalBB[i] = b);
 
 
         final ArrayList<String> finalTemp_array = temp_array;
-        builder_for_sharing.setPositiveButton("Share", new DialogInterface.OnClickListener() {
+        builder_for_sharing.setPositiveButton(R.string.share, new DialogInterface.OnClickListener() {
             int true_counts;
             int false_counts;
 
@@ -326,14 +259,11 @@ public class SharingIsCaringSSB extends Activity {
                         true_counts++;
                     }
                 }
-//                Toast.makeText(context, "Boolean states:" + Arrays.toString(finalBB),Toast.LENGTH_SHORT).show();
-//                Toast.makeText(context, "Blanks :" + finalTemp_array.toString(),Toast.LENGTH_SHORT).show();
 
                 if (false_counts == finalBB.length) {
-                    Toast.makeText(context, "Please select switches!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.please_select_switches, Toast.LENGTH_SHORT).show();
                     dialogInterface.dismiss();
                 } else {
-                    /////////////////////////
                     final ArrayList<String> share_string = new ArrayList<>();
                     for (int i_temp = 0; i_temp < finalTemp_array.size(); i_temp++) {
                         share_string.add('"' + finalTemp_array.get(i_temp) + '"');
@@ -341,44 +271,31 @@ public class SharingIsCaringSSB extends Activity {
 
                     final String result = String_to_hexa(share_string.toString());
 
-
-                    qr_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            alertDialog_sharing_secret_code.dismiss();
-                            try {
-                                display_qr("https://smart.switch.board/" + result);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
+                    qr_button.setOnClickListener(view -> {
+                        alertDialog_sharing_secret_code.dismiss();
+                        try {
+                            display_qr("https://smart.switch.board/" + result);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+
                     });
-                    //////////////
-                    share__via_mssg_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            alertDialog_sharing_secret_code.dismiss();
-                            try {
-                                shareText(result, context);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+
+                    share__via_mssg_button.setOnClickListener(view -> {
+                        alertDialog_sharing_secret_code.dismiss();
+                        try {
+                            shareText(result, context);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     });
 
                     alertDialog_sharing_secret_code = builder.create();
                     alertDialog_sharing_secret_code.show();
-                    /////////////////////////
                 }
             }
         });
-        builder_for_sharing.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder_for_sharing.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
 
         AlertDialog alertDialog = builder_for_sharing.create();
         alertDialog.show();
@@ -399,12 +316,7 @@ public class SharingIsCaringSSB extends Activity {
         Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
         qr_display.setImageBitmap(bitmap);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -413,13 +325,12 @@ public class SharingIsCaringSSB extends Activity {
     public void shareText(String text, Context context) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "I'm inviting you to join Smart Swtich Board.\nClick the link https://smart.switch.board/" + text);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_text) + text);
         sendIntent.setType("text/plain");
         Intent shareIntent = Intent.createChooser(sendIntent, null);
         context.startActivity(shareIntent, Bundle.EMPTY);
     }
 
-    /////////////////////////////////////
     private String String_to_hexa(String name) {
         StringBuilder sb = new StringBuilder();
 
@@ -428,22 +339,20 @@ public class SharingIsCaringSSB extends Activity {
             String hexString = Integer.toHexString(c);
             sb.append(hexString);
         }
-//        final String result = sb.toString();
         return sb.toString();
     }
 
     private String Hexa_to_string(String name) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         char[] charArray = name.toCharArray();
         for (int i = 0; i < charArray.length; i = i + 2) {
             String st = "" + charArray[i] + "" + charArray[i + 1];
             char ch = (char) Integer.parseInt(st, 16);
-            result = result + ch;
+            result.append(ch);
         }
-        return result;
+        return result.toString();
     }
 
-    ///////////////////
     public void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
         SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -471,5 +380,4 @@ public class SharingIsCaringSSB extends Activity {
         }.getType();
         return gson.fromJson(json, type);
     }
-/////////////////
 }
