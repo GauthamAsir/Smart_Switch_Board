@@ -270,7 +270,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
             public void onClick(DialogInterface dialogInterface, int i) {
                 for (int k = 0; k < finalAA.length; k++) {
                     if (finalBB[k]) {
-                        DatabaseReference deleting_reference = firebase_realtime_db.getReference(getting_secret_key + "/" + "Switch : " + (k + 1));
+                        DatabaseReference deleting_reference = firebase_realtime_db.getReference(getting_secret_key + "/" + "Switch : " + secret_key_which_is_deleted.indexOf(finalAA[k]));
                         deleting_reference.setValue("Deleted");
                         true_counts++;
                     } else {
