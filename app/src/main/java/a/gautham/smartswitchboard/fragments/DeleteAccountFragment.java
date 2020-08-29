@@ -60,13 +60,13 @@ public class DeleteAccountFragment extends BottomSheetDialogFragment {
             } else {
                 pass.setError(null);
                 loading(true);
-                setLoadingInfo("Verifying Password");
+                setLoadingInfo(getString(R.string.verifying_password));
 
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(Common.EMAIL, getPass())
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
 
-                                setLoadingInfo("Deleting Account");
+                                setLoadingInfo(getString(R.string.deleting_account));
 
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                 if (user != null) {
@@ -77,19 +77,13 @@ public class DeleteAccountFragment extends BottomSheetDialogFragment {
                                     FirebaseFirestore.getInstance().collection("Users")
                                             .document(Common.uid).delete().addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            FirebaseAuth.getInstance().signOut();
+                                            logOut();
                                             user.delete();
-                                            SharedPreferences preferences = requireActivity().getSharedPreferences("User", Context.MODE_PRIVATE);
-                                            preferences.edit().clear().apply();
-                                            Common.uid = "default";
-                                            Common.PHONE_NUMBER = "default";
-                                            Common.EMAIL = "default";
-                                            Common.NAME = "default";
-                                            Common.toastShort(getContext(), "Account Deleted", 0, 0);
+                                            Common.toastShort(getContext(), getString(R.string.acount_deleted), 0, 0);
                                             startActivity(new Intent(getActivity(), Login.class));
                                         } else {
                                             loading(false);
-                                            Common.toastShort(getContext(), "Failed to delete account", 0, 0);
+                                            Common.toastShort(getContext(), getString(R.string.failed_to_delete_account), 0, 0);
                                         }
                                     });
                                 }
@@ -106,6 +100,20 @@ public class DeleteAccountFragment extends BottomSheetDialogFragment {
         });
 
         return root;
+    }
+
+    private void logOut() {
+        FirebaseAuth.getInstance().signOut();
+        SharedPreferences userPreferences = requireActivity().getSharedPreferences("User", Context.MODE_PRIVATE);
+        int theme = userPreferences.getInt("theme", 0);
+        userPreferences.edit().clear().apply();
+        userPreferences.edit().putInt("theme", theme).apply();
+        SharedPreferences prefs = requireActivity().getSharedPreferences("DB_temp", Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        Common.uid = "default";
+        Common.PHONE_NUMBER = "default";
+        Common.EMAIL = "default";
+        Common.NAME = "default";
     }
 
     private void loading(boolean value) {
