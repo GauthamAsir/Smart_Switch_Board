@@ -1,6 +1,7 @@
 package a.gautham.smartswitchboard.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.activity.Login;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ChangePasswordFragment extends BottomSheetDialogFragment {
 
@@ -304,7 +307,7 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
                                         Common.toastShort(getActivity(), "Password Updated, Re-Login",
                                                 0, 0);
                                     }
-                                    FirebaseAuth.getInstance().signOut();
+                                    logOut();
                                     dismiss();
                                     startActivity(new Intent(requireActivity(), Login.class));
                                     requireActivity().finish();
@@ -327,6 +330,20 @@ public class ChangePasswordFragment extends BottomSheetDialogFragment {
             Common.toastShort(getActivity(), e.getMessage(), 0, 0);
         }
 
+    }
+
+    private void logOut() {
+        FirebaseAuth.getInstance().signOut();
+        SharedPreferences userPreferences = requireActivity().getSharedPreferences("User", MODE_PRIVATE);
+        int theme = userPreferences.getInt("theme", 0);
+        userPreferences.edit().clear().apply();
+        userPreferences.edit().putInt("theme", theme).apply();
+        SharedPreferences prefs = requireActivity().getSharedPreferences("DB_temp", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        Common.uid = "default";
+        Common.PHONE_NUMBER = "default";
+        Common.EMAIL = "default";
+        Common.NAME = "default";
     }
 
     private void setLoadingInfo(String text) {

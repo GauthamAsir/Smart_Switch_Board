@@ -353,7 +353,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private void logOut() {
         FirebaseAuth.getInstance().signOut();
+        SharedPreferences userPreferences = getSharedPreferences("User", MODE_PRIVATE);
+        int theme = userPreferences.getInt("theme", 0);
         userPreferences.edit().clear().apply();
+        userPreferences.edit().putInt("theme", theme).apply();
         SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
         prefs.edit().clear().apply();
         Common.uid = "default";
