@@ -42,6 +42,9 @@
                     style="@style/textInput"
                     app:errorEnabled="true"
                     app:hintEnabled="true"
+                    android:nextFocusLeft="@+id/signInPass"
+                    android:nextFocusRight="@+id/signInPass"
+                    android:nextFocusUp="@+id/signInPass"
                     android:nextFocusDown="@id/signInPass">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -50,7 +53,7 @@
                         android:inputType="textEmailAddress"
                         android:drawableEnd="@drawable/ic_outline_email_24"
                         style="@style/editTextInput"
-                        android:focusable="true"/>
+                        android:focusable="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -62,6 +65,9 @@
                     style="@style/textInput"
                     app:errorEnabled="true"
                     app:hintEnabled="true"
+                    android:nextFocusLeft="@+id/login_bt"
+                    android:nextFocusRight="@+id/login_bt"
+                    android:nextFocusUp="@+id/login_bt"
                     android:nextFocusDown="@id/login_bt">
 
                     <com.google.android.material.textfield.TextInputEditText
