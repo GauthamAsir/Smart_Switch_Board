@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="@dimen/_12dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/wifiwifi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:ignore="UseCompoundDrawables">
-
-        <TextView
-            android:id="@+id/wifiwifi"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="@dimen/_6dp"
-            android:text="@string/do_you_have_wi_fi_router"
-            android:textAlignment="center"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textSize="20sp" />
-
-    </LinearLayout>
+        android:padding="@dimen/_6dp"
+        android:text="@string/do_you_have_wi_fi_router"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textSize="20sp" />
 
     <Space
         android:layout_width="match_parent"
