@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements
                             ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
                             ssbList.add(myList);
                         }
-                        new Common().saveArrayList(MainActivity.this, ssbList, "fire_db_temp");
+                        saveArrayList(ssbList);
                         prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
                     }
                 }
@@ -265,6 +265,13 @@ public class MainActivity extends AppCompatActivity implements
                 Common.toastLong(getApplicationContext(), getString(R.string.unable_to_sync_old_data), 0, 0);
             }
         });
+    }
+
+    private void saveArrayList(ArrayList<ArrayList<String>> list) {
+        SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        prefs.edit().putString("fire_db_temp", json).apply();
     }
 
     @Override

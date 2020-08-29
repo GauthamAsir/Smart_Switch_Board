@@ -3,7 +3,6 @@ package a.gautham.smartswitchboard;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,12 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
-
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class Common {
 
@@ -103,13 +96,6 @@ public class Common {
         builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    public void saveArrayList(Context context, ArrayList<ArrayList<String>> list, String key) {
-        SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        prefs.edit().putString(key, json).apply();
     }
 
 }

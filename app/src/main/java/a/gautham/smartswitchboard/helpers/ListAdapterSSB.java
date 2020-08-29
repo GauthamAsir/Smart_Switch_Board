@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -48,7 +50,6 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
     FirebaseDatabase firebase_realtime_db = FirebaseDatabase.getInstance();
     private ArrayList<String> data;
     private ArrayList<String> ori_relay_name;
-    private Common common = new Common();
 
     public ListAdapterSSB(@NonNull Context context, ArrayList<String> resource, ArrayList<String> names) {
         super(context, R.layout.item_layout, resource);
@@ -195,7 +196,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                         saved_fire_db.get(i).set(AA, String.valueOf(editText.getText()));
                     }
                 }
-                common.saveArrayList(context, saved_fire_db, "fire_db_temp");
+                saveArrayList(saved_fire_db);
                 Toast.makeText(context, R.string.title_changed, Toast.LENGTH_LONG).show();
 
                 ori_relay_name.clear();
@@ -279,7 +280,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                 if (true_counts == finalBB.length) {
 
                     arrayLists.remove(secret_key_which_is_deleted);
-                    common.saveArrayList(context, arrayLists, "fire_db_temp");
+                    saveArrayList(arrayLists);
 
                     ori_relay_name.clear();
                     data.clear();
@@ -304,6 +305,23 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+
+    public void saveArrayList(ArrayList<ArrayList<String>> list) {
+        SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        prefs.edit().putString("fire_db_temp", json).apply();
+        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
+        }.getType();
+        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
+        ArrayList<String> singleList = new ArrayList<>();
+        for (ArrayList<String> s : ssbList) {
+            String joined = TextUtils.join(",", s);
+            singleList.add(joined);
+        }
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(Common.uid).update("ssb_list", singleList);
     }
 
     @Override
