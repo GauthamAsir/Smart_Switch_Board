@@ -1,6 +1,7 @@
 package a.gautham.smartswitchboard.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -21,7 +23,13 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.R;
@@ -155,6 +163,31 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
 
+            Preference sync = findPreference("sync");
+            if (sync != null) {
+                sync.setOnPreferenceClickListener(preference -> {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+                    builder.setTitle(R.string.sync);
+                    builder.setMessage(R.string.sync_summary);
+                    builder.setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                        syncSSBList(Common.uid);
+                        dialogInterface.dismiss();
+                    });
+                    builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                            ContextCompat.getColor(requireActivity(), R.color.colorAccent)
+                    );
+                    alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+                            ContextCompat.getColor(requireActivity(), R.color.colorAccent)
+                    );
+                    return true;
+                });
+            }
+
             Preference report_bug = findPreference("report_bug");
             if (report_bug != null) {
                 report_bug.setOnPreferenceClickListener(preference -> {
@@ -193,7 +226,46 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 });
             }
-
         }
+
+        private void syncSSBList(String uid) {
+
+            DocumentReference docRef = FirebaseFirestore.getInstance().collection("Users")
+                    .document(uid);
+
+            docRef.get().addOnCompleteListener(task -> {
+
+                DocumentSnapshot document = task.getResult();
+
+                if (task.isSuccessful() && document != null) {
+                    if (document.get("ssb_list") != null) {
+                        ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
+                        ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+                        if (arrayList.size() > 0) {
+                            for (String s : arrayList) {
+                                ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                                ssbList.add(myList);
+                            }
+                            new Common().saveArrayList(requireActivity(), ssbList, "fire_db_temp");
+                            AlertDialog.Builder successBuilder = new AlertDialog.Builder(requireActivity());
+                            successBuilder.setTitle(R.string.sync);
+                            successBuilder.setMessage(R.string.sync_successful);
+
+                            successBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
+
+                            AlertDialog successDialog = successBuilder.create();
+                            successDialog.show();
+                            successDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                                    ContextCompat.getColor(requireActivity(), R.color.colorAccent)
+                            );
+                        }
+                    }
+                } else {
+                    Common.toastLong(requireActivity(), getString(R.string.unable_to_sync_old_data), 0, 0);
+                }
+            });
+        }
+
     }
+
 }

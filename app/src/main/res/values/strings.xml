@@ -144,4 +144,5 @@
     <string name="acount_deleted">Account Deleted</string>
     <string name="verifying_password">Verifying Password</string>
     <string name="deleting_account">Deleting Account</string>
+    <string name="sync_successful">Sync Successful, Sometimes it requires restart to apply changes</string>
 </resources>
