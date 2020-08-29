@@ -64,13 +64,11 @@ public class MainActivity extends AppCompatActivity implements
     static boolean Fire_persistence_state = false;
     private FirebaseFirestore firestore;
     public int Cam_request_code = 321;
-    public int Loca_request_code = 111;
+    public int localRequestCode = 111;
     public Uri data;
     ListAdapterSSB adapter;
     ArrayList<String> original_fire_list = new ArrayList<>();
     ArrayList<String> original_name_list = new ArrayList<>();
-    //ArrayList<String> temp_fire_list = new ArrayList<>();
-    //ArrayList<String> temp_name_list = new ArrayList<>();
     ArrayList<ArrayList<String>> fire_list;
     boolean sync, check_deep_link = true;
     private SharedPreferences userPreferences;
@@ -162,15 +160,15 @@ public class MainActivity extends AppCompatActivity implements
             if (s != null) {
                 if (s.equals("SUCCESS")) {
                     new Common().Successful_alertdialog(MainActivity.this);
-                    Toast.makeText(getApplicationContext(), "Connected Successfully!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.connected_successfully, Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         WifiManager wifiManager = (WifiManager) getApplicationContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                         String current_wifi_ssid = wifiManager.getConnectionInfo().getSSID();
                         if (current_wifi_ssid.contains("SSB")) {
                             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle("Please Disconnect 'SSB'");
+                            builder.setTitle(R.string.please_disconnect_ssb);
                             builder.setCancelable(false);
-                            builder.setPositiveButton("Open WiFi settings", (dialogInterface, i) -> {
+                            builder.setPositiveButton(R.string.open_wifi_settings, (dialogInterface, i) -> {
                                 startActivity(new Intent(Settings.Panel.ACTION_WIFI));
                                 dialogInterface.dismiss();
                             });
@@ -209,12 +207,12 @@ public class MainActivity extends AppCompatActivity implements
             if (checkUpdate) {
                 AppUpdater appUpdater = new AppUpdater(this);
                 appUpdater.setDisplay(Display.DIALOG);
-                appUpdater.setUpGithub("GauthamAsir", "Smart_Switch_Board");
+                appUpdater.setUpGithub(getString(R.string.git_username), getString(R.string.git_repo_name));
                 appUpdater.start();
             }
 
         } else {
-            Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
+            Common.toastShort(getApplicationContext(), getString(R.string.no_interent), 0, 0);
         }
 
     }
@@ -264,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
             } else {
-                Common.toastLong(getApplicationContext(), "Unable to Sync Your Old Data", 0, 0);
+                Common.toastLong(getApplicationContext(), getString(R.string.unable_to_sync_old_data), 0, 0);
             }
         });
     }
@@ -283,13 +281,13 @@ public class MainActivity extends AppCompatActivity implements
                 shaing_is_caring.adding_secret_key_from_scaned_qr_copy_paste_deep_link(data.toString());
                 check_deep_link = false;
             } else {
-                Toast.makeText(this, "Invalid link!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.invalid_link, Toast.LENGTH_SHORT).show();
             }
         }
 
         Common.SETTINGS_ENABLED = Common.getConnectivityStatus(getApplicationContext());
         if (!Common.getConnectivityStatus(getApplicationContext())) {
-            Common.toastShort(getApplicationContext(), "No Internet Connection", 0, 0);
+            Common.toastShort(getApplicationContext(), getString(R.string.no_interent), 0, 0);
         } else {
             checkUserData();
         }
@@ -320,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 builder.setCancelable(true);
 
-                builder.setPositiveButton("Yes", (dialogInterface, i) -> {
+                builder.setPositiveButton(R.string.yes, (dialogInterface, i) -> {
 
                     android.app.AlertDialog alertDialog = new SpotsDialog.Builder()
                             .setContext(this)
@@ -337,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 });
 
-                builder.setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss());
+                builder.setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss());
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
@@ -367,24 +365,17 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
 
-        //Snackbar
-        Snackbar snackbar = Snackbar.make(binding.drawerLayout, "Press Again to Exit", Snackbar.LENGTH_SHORT);
+        //SnackBar
+        Snackbar snackbar = Snackbar.make(binding.drawerLayout, R.string.press_again_to_exit, Snackbar.LENGTH_SHORT);
 
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (!binding.navView.getMenu().findItem(R.id.nav_home).isChecked()) {
-            //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Home()).commit();
-            binding.navView.setCheckedItem(R.id.nav_home);
-            Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
         } else {
             if (back_pressed + 2000 > System.currentTimeMillis()) {
                 finish();
-                moveTaskToBack(true);
                 System.exit(1);
-                android.os.Process.killProcess(android.os.Process.myPid());
-                finish();
             } else {
-                snackbar.setText("Press Again to Exit");
+                snackbar.setText(R.string.press_again_to_exit);
                 snackbar.show();
                 back_pressed = System.currentTimeMillis();
             }
@@ -396,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements
             if (Common.uid.equals("default")) {
                 FirebaseAuth.getInstance().signOut();
                 runOnUiThread(() -> {
-                    Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                    Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
                     logOut();
                     startActivity(new Intent(getApplicationContext(), Login.class));
                     finish();
@@ -415,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements
                         if (!task.isSuccessful() || document == null || document.get("phone_number") == null) {
                             FirebaseAuth.getInstance().signOut();
                             runOnUiThread(() -> {
-                                Common.toastShort(getApplicationContext(), "Something went wrong", Color.RED, Color.WHITE);
+                                Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
                                 logOut();
                                 startActivity(new Intent(getApplicationContext(), Login.class));
                                 finish();
@@ -455,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements
                                     Common.EMAIL = "default";
                                     Common.NAME = "default";
                                     Common.toastLong(getApplicationContext(),
-                                            "Your password has been changed recently, re-login to continue", Color.RED, Color.WHITE);
+                                            getString(R.string.password_changed_recently_warning), Color.RED, Color.WHITE);
                                     startActivity(new Intent(getApplicationContext(), Login.class));
                                     finish();
                                 });
@@ -473,18 +464,18 @@ public class MainActivity extends AppCompatActivity implements
 
         if (result != null) {
             if (result.getContents() == null) {
-                Toast.makeText(getApplicationContext(), "Please Scan valid QR code", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.please_scan_valid_qr, Toast.LENGTH_SHORT).show();
             } else {
                 if (result.getContents().contains("https://smart.switch.board/")) {
                     SharingIsCaringSSB shaing_is_caring = new SharingIsCaringSSB(MainActivity.this
                             , MainActivity.this, adapter);
                     shaing_is_caring.adding_secret_key_from_scaned_qr_copy_paste_deep_link(result.getContents());
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please Scan valid QR code", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.please_scan_valid_qr, Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
-            Toast.makeText(getApplicationContext(), "Please Scan valid QR code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.please_scan_valid_qr, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -500,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 Toast.makeText(getApplicationContext(), "Permission Denied! Please Allow Permission.", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == Loca_request_code) {
+        } else if (requestCode == localRequestCode) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(getApplicationContext(), "Permission granted!", Toast.LENGTH_SHORT).show();
             } else {
@@ -511,29 +502,15 @@ public class MainActivity extends AppCompatActivity implements
 
     public void Start_Custom_adaptor() {
 
-//        for (int i = 0; i < fire_list.size(); i++){
-//            int sizeee = fire_list.get(i).size();
-//            for (int j = 1; j < sizeee; j++){
-//                temp_fire_list.add(fire_list.get(i).get(0) + "/" + "Switch : " + String.valueOf(j));
-//                temp_name_list.add(fire_list.get(i).get(j));
-//            }
-//        }
-
         for (int i = 0; i < fire_list.size(); i++) {
-//                String[] temp = fire_list.get(i)[0].split(":"); //Finding Relay numbers
-//                int relay_counts = Integer.parseInt(temp[temp.length - 1]);
             int sizeee = fire_list.get(i).size();
 
-//                for (int j = 0; j < relay_counts; j++) {
-//                    list.add(fire_list.get(i) + "/" + "Switch : " + String.valueOf(j + 1));
-//                }
             for (int j = 1; j < sizeee; j++) {
                 if (!fire_list.get(i).get(j).equals("BLANK")) {
                     original_fire_list.add(fire_list.get(i).get(0) + "/" + "Switch : " + j);
                     original_name_list.add(fire_list.get(i).get(j));
                 }
             }
-//                adapter.notifyDataSetChanged();
         }
 
         adapter = new ListAdapterSSB(MainActivity.this, original_fire_list, original_name_list);

@@ -43,12 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
         toolBar.setTitle(R.string.menu_settings);
         toolBar.setNavigationOnClickListener(view -> onBackPressed());
 
-        /*Window window = getWindow();
-        TypedValue typedValue = new TypedValue();
-        getApplicationContext().getTheme()
-                .resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
-        window.setStatusBarColor(typedValue.data);*/
-
     }
 
     @Override
