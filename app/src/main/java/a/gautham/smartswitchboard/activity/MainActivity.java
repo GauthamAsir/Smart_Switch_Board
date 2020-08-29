@@ -224,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements
         if (fire_list == null || fire_list.size() <= 0) {
             binding.message.setVisibility(View.VISIBLE);
             binding.message.setText(R.string.not_connected_to_ssb);
-            Toast.makeText(getApplicationContext(), getString(R.string.not_connected_to_ssb), Toast.LENGTH_SHORT).show();
         } else {
             binding.message.setVisibility(View.GONE);
             Start_Custom_adaptor();
