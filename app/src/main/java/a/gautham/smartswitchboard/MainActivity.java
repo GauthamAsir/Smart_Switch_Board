@@ -53,7 +53,6 @@ import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.helpers.ListAdapterSSB;
 import a.gautham.smartswitchboard.helpers.NewConnectionIsAwesome;
 import a.gautham.smartswitchboard.helpers.SharingIsCaringSSB;
-import a.gautham.smartswitchboard.helpers.Utils;
 import a.gautham.smartswitchboard.navigation.SettingsActivity;
 import dmax.dialog.SpotsDialog;
 
@@ -67,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements
     public int Cam_request_code = 321;
     public int Loca_request_code = 111;
     public Uri data;
-    Utils utils = new Utils();
     ListAdapterSSB adapter;
     ArrayList<String> original_fire_list = new ArrayList<>();
     ArrayList<String> original_name_list = new ArrayList<>();
@@ -163,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements
             String s = bundle.getString("SUCCESS");
             if (s != null) {
                 if (s.equals("SUCCESS")) {
-                    utils.Successful_alertdialog(MainActivity.this);
+                    new Common().Successful_alertdialog(MainActivity.this);
                     Toast.makeText(getApplicationContext(), "Connected Successfully!", Toast.LENGTH_LONG).show();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         WifiManager wifiManager = (WifiManager) getApplicationContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -261,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements
                             ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
                             ssbList.add(myList);
                         }
-                        new Utils().saveArrayList(MainActivity.this, ssbList, "fire_db_temp");
+                        new Common().saveArrayList(MainActivity.this, ssbList, "fire_db_temp");
                         prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
                     }
                 }
