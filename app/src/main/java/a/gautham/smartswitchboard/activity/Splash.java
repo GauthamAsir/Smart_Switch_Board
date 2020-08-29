@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
 
 public class Splash extends AppCompatActivity {
 

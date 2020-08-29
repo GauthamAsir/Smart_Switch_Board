@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +37,10 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.activity.MainActivity;
 
 public class PhoneLoginFragment extends BottomSheetDialogFragment {
 

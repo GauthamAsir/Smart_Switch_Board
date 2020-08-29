@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Register">
+    tools:context=".activity.Register">
 
     <TextView
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:textSize="@dimen/_42sp"
         android:layout_above="@+id/credential_container"
         android:layout_marginBottom="@dimen/_12dp"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorAccent" />
 
     <LinearLayout
         android:id="@+id/credential_container"

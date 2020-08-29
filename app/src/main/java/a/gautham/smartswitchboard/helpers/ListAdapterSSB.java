@@ -37,8 +37,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import a.gautham.smartswitchboard.Common;
-import a.gautham.smartswitchboard.MainActivity;
 import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.activity.MainActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 

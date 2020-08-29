@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.fragments;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,6 +38,10 @@ import com.google.firebase.firestore.ListenerRegistration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.activity.Login;
 
 public class ChangePasswordFragment extends BottomSheetDialogFragment {
 

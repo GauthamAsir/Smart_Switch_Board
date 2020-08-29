@@ -27,11 +27,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ReportBug" />
+        <activity android:name=".activity.ReportBug" />
         <activity
-            android:name=".navigation.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".Splash">
+        <activity android:name=".activity.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,12 +39,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Register"
+            android:name=".activity.Register"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Login"
+            android:name=".activity.Login"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

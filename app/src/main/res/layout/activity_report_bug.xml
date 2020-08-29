@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReportBug">
+    tools:context=".activity.ReportBug">
 
     <EditText
         android:id="@+id/problem_bug_description"

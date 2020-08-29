@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import a.gautham.smartswitchboard.Common;
-import a.gautham.smartswitchboard.MainActivity;
 import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.activity.MainActivity;
 
 public class SharingIsCaringSSB extends Activity {
     public Context context;

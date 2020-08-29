@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +23,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.Map;
 import java.util.Objects;
 
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.databinding.ActivityLoginBinding;
+import a.gautham.smartswitchboard.fragments.ChangePasswordFragment;
+import a.gautham.smartswitchboard.fragments.PhoneLoginFragment;
 import dmax.dialog.SpotsDialog;
 
 public class Login extends AppCompatActivity {

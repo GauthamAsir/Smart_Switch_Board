@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +28,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
+
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
+import a.gautham.smartswitchboard.activity.Login;
 
 public class DeleteAccountFragment extends BottomSheetDialogFragment {
 

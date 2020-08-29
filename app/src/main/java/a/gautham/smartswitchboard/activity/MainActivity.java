@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -49,11 +49,12 @@ import java.util.Objects;
 
 import a.gautham.library.AppUpdater;
 import a.gautham.library.helper.Display;
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.helpers.ListAdapterSSB;
 import a.gautham.smartswitchboard.helpers.NewConnectionIsAwesome;
 import a.gautham.smartswitchboard.helpers.SharingIsCaringSSB;
-import a.gautham.smartswitchboard.navigation.SettingsActivity;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements

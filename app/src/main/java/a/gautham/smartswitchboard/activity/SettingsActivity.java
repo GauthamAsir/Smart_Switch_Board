@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard.navigation;
+package a.gautham.smartswitchboard.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -23,11 +23,10 @@ import androidx.preference.PreferenceScreen;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import a.gautham.smartswitchboard.ChangePasswordFragment;
 import a.gautham.smartswitchboard.Common;
-import a.gautham.smartswitchboard.DeleteAccountFragment;
 import a.gautham.smartswitchboard.R;
-import a.gautham.smartswitchboard.ReportBug;
+import a.gautham.smartswitchboard.fragments.ChangePasswordFragment;
+import a.gautham.smartswitchboard.fragments.DeleteAccountFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard;
+package a.gautham.smartswitchboard.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -40,13 +40,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import a.gautham.smartswitchboard.Common;
+import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.databinding.ActivityRegisterBinding;
 import dmax.dialog.SpotsDialog;
 
 public class Register extends AppCompatActivity {
 
     private ActivityRegisterBinding binding;
-    private int progress = 0;
     private boolean validateName = false, validateEmail = false, validatePass = false, validateRePass = false,
             validateNum = false;
 
