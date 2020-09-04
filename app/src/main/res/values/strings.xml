@@ -145,4 +145,8 @@
     <string name="verifying_password">Verifying Password</string>
     <string name="deleting_account">Deleting Account</string>
     <string name="sync_successful">Sync Successful, Sometimes it requires restart to apply changes</string>
+    <string name="bin">Bin</string>
+    <string name="nothing_deleted_yet">Nothing is Deleted yet!</string>
+    <string name="restore_now">Restore Now</string>
+    <string name="delete_forever">Delete Forever</string>
 </resources>

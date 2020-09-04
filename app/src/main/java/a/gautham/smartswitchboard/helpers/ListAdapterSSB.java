@@ -25,6 +25,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -196,7 +197,7 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                         saved_fire_db.get(i).set(AA, String.valueOf(editText.getText()));
                     }
                 }
-                saveArrayList(saved_fire_db);
+                saveArrayList(saved_fire_db, "fire_db_temp");
                 Toast.makeText(context, R.string.title_changed, Toast.LENGTH_LONG).show();
 
                 ori_relay_name.clear();
@@ -217,6 +218,11 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
     }
 
     public void delete_name_of_raley(final String fire_rt_db_secret_key) {
@@ -280,7 +286,30 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                 if (true_counts == finalBB.length) {
 
                     arrayLists.remove(secret_key_which_is_deleted);
-                    saveArrayList(arrayLists);
+                    saveArrayList(arrayLists, "fire_db_temp");
+
+                    ArrayList<ArrayList<String>> deleted_ssbs_arraylist = getArrayList("deleted_ssbs");
+                    ArrayList<ArrayList<String>> if_array_is_null = new ArrayList<>();
+                    if_array_is_null.add(secret_key_which_is_deleted);
+
+                    if (deleted_ssbs_arraylist == null || deleted_ssbs_arraylist.isEmpty()) {
+                        saveArrayList(if_array_is_null, "deleted_ssbs");
+                    } else {
+                        boolean state_deleted = true;
+                        String initial_name = secret_key_which_is_deleted.get(0);
+                        for (int temp_i = 0; temp_i < deleted_ssbs_arraylist.size(); temp_i++) {
+                            if (deleted_ssbs_arraylist.get(temp_i).get(0).equals(initial_name)) {
+                                deleted_ssbs_arraylist.set(deleted_ssbs_arraylist.indexOf(deleted_ssbs_arraylist.get(temp_i)), secret_key_which_is_deleted);
+                                saveArrayList(deleted_ssbs_arraylist, "deleted_ssbs");
+                                state_deleted = false;
+                            }
+                        }
+
+                        if (state_deleted) {
+                            deleted_ssbs_arraylist.add(secret_key_which_is_deleted);
+                            saveArrayList(deleted_ssbs_arraylist, "deleted_ssbs");
+                        }
+                    }
 
                     ori_relay_name.clear();
                     data.clear();
@@ -304,14 +333,18 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
 
     }
 
-    public void saveArrayList(ArrayList<ArrayList<String>> list) {
+    public void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
         SharedPreferences prefs = context.getSharedPreferences("DB_temp", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        prefs.edit().putString("fire_db_temp", json).apply();
+        prefs.edit().putString(key, json).apply();
         Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
         }.getType();
         ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
@@ -417,6 +450,8 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
                         (arg0, arg1) -> arg0.cancel());
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
+                alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                        context, R.color.colorAccent));
             }
         }
     }

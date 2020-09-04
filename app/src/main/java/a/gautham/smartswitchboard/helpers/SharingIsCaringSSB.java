@@ -108,6 +108,10 @@ public class SharingIsCaringSSB extends Activity {
             copy_paste.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
             AlertDialog alertDialog = copy_paste.create();
             alertDialog.show();
+            alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                    context, R.color.colorAccent));
+            alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                    context, R.color.colorAccent));
         });
         alertDialog_getting_secret_code = builder.create();
         alertDialog_getting_secret_code.show();
@@ -149,6 +153,10 @@ public class SharingIsCaringSSB extends Activity {
             builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
+            alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                    context, R.color.colorAccent));
+            alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                    context, R.color.colorAccent));
         } else {
             boolean temp_state = false;
             for (int i = 0; i < arrayLists.size(); i++) {
@@ -174,6 +182,10 @@ public class SharingIsCaringSSB extends Activity {
                 builder.setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss());
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
+                alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                        context, R.color.colorAccent));
+                alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                        context, R.color.colorAccent));
             }
         }
     }
@@ -299,6 +311,10 @@ public class SharingIsCaringSSB extends Activity {
 
         AlertDialog alertDialog = builder_for_sharing.create();
         alertDialog.show();
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
 
     }
 
@@ -320,6 +336,10 @@ public class SharingIsCaringSSB extends Activity {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(
+                context, R.color.colorAccent));
     }
 
     public void shareText(String text, Context context) {

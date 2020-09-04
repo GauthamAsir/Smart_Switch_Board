@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -246,7 +247,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
                                 ssbList.add(myList);
                             }
-                            new Common().saveArrayList(requireActivity(), ssbList, "fire_db_temp");
+                            saveArrayList(ssbList);
                             AlertDialog.Builder successBuilder = new AlertDialog.Builder(requireActivity());
                             successBuilder.setTitle(R.string.sync);
                             successBuilder.setMessage(R.string.sync_successful);
@@ -264,6 +265,15 @@ public class SettingsActivity extends AppCompatActivity {
                     Common.toastLong(requireActivity(), getString(R.string.unable_to_sync_old_data), 0, 0);
                 }
             });
+        }
+
+        public void saveArrayList(ArrayList<ArrayList<String>> list) {
+            SharedPreferences prefs = requireActivity().getSharedPreferences("DB_temp", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            Gson gson = new Gson();
+            String json = gson.toJson(list);
+            editor.putString("fire_db_temp", json);
+            editor.apply();
         }
 
     }

@@ -54,6 +54,7 @@ import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.databinding.ActivityMainBinding;
 import a.gautham.smartswitchboard.helpers.ListAdapterSSB;
 import a.gautham.smartswitchboard.helpers.NewConnectionIsAwesome;
+import a.gautham.smartswitchboard.helpers.RestoreSwitches;
 import a.gautham.smartswitchboard.helpers.SharingIsCaringSSB;
 import dmax.dialog.SpotsDialog;
 
@@ -316,6 +317,10 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
+                break;
+            case R.id.nav_recycle_bin:
+                RestoreSwitches restoreSwitches = new RestoreSwitches(MainActivity.this, adapter);
+                restoreSwitches.Show_deleted_switches();
                 break;
             case R.id.nav_logout:
 
