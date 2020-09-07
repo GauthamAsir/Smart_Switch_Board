@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -31,6 +30,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -481,7 +481,10 @@ public class Register extends AppCompatActivity {
                final String createdDate = df.format(date);
 
                auth.createUserWithEmailAndPassword(getEmail(), getPass()).addOnCompleteListener(task1 -> {
-                   if (task1.isSuccessful()){
+                   if (task1.isSuccessful()) {
+
+                       Map<String, Map<String, Object>> devicesList = new HashMap<>();
+                       devicesList.put(Common.DEVICE_ID, new Common().getDeviceDetails(getApplicationContext(), true));
 
                        Map<String, Object> userMap = new HashMap<>();
                        userMap.put("name", name);
@@ -489,13 +492,15 @@ public class Register extends AppCompatActivity {
                        userMap.put("password", pass);
                        userMap.put("phone_number", pno);
                        userMap.put("created_date", createdDate);
-                       userMap.put("current_device", Build.VERSION.SDK_INT);
+                       userMap.put("devices", devicesList);
 
                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                        Map<String, String> map = new HashMap<>();
                        map.put("uid", Objects.requireNonNull(user).getUid());
                        userMap.put("uid", Objects.requireNonNull(user).getUid());
+
+                       FirebaseMessaging.getInstance().subscribeToTopic(Objects.requireNonNull(user).getUid());
 
                        firestore.collection("Phones").document(pno).set(map);
 

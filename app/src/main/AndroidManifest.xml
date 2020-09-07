@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="a.gautham.smartswitchboard">
 
-
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -27,6 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activity.ManageDevice" />
         <activity android:name=".activity.ReportBug" />
         <activity
             android:name=".activity.SettingsActivity"
@@ -56,6 +56,8 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <service android:name=".services.UserCheck" />
     </application>
 
 </manifest>

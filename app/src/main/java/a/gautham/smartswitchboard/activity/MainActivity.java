@@ -56,6 +56,7 @@ import a.gautham.smartswitchboard.helpers.ListAdapterSSB;
 import a.gautham.smartswitchboard.helpers.NewConnectionIsAwesome;
 import a.gautham.smartswitchboard.helpers.RestoreSwitches;
 import a.gautham.smartswitchboard.helpers.SharingIsCaringSSB;
+import a.gautham.smartswitchboard.services.UserCheck;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        startService(new Intent(getBaseContext(), UserCheck.class));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -251,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (task.isSuccessful() && document != null) {
                 if (document.get("ssb_list") != null) {
+                    @SuppressWarnings("unchecked")
                     ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
                     ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
                     if (arrayList.size() > 0) {
@@ -313,14 +317,20 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.nav_home:
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
+                binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
                 break;
+            case R.id.nav_devices:
+                startActivity(new Intent(getApplicationContext(), ManageDevice.class));
+                binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
+                break;
             case R.id.nav_recycle_bin:
                 RestoreSwitches restoreSwitches = new RestoreSwitches(MainActivity.this, adapter);
                 restoreSwitches.Show_deleted_switches();
+                binding.navView.post(() -> binding.navView.setCheckedItem(R.id.nav_home));
                 break;
             case R.id.nav_logout:
 
@@ -418,24 +428,13 @@ public class MainActivity extends AppCompatActivity implements
 
                         DocumentSnapshot document = task.getResult();
 
-                        if (!task.isSuccessful() || document == null || document.get("phone_number") == null) {
-                            FirebaseAuth.getInstance().signOut();
-                            runOnUiThread(() -> {
-                                Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
-                                logOut();
-                                startActivity(new Intent(getApplicationContext(), Login.class));
-                                finish();
-                            });
-                            return;
-                        }
-
                         String mail = userPreferences.getString("email", "");
                         String name = userPreferences.getString("name", "");
                         String phone = userPreferences.getString("phone_number", "");
-                        String pass = userPreferences.getString("password", "");
 
                         if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
 
+                            assert document != null;
                             Common.NAME = Objects.requireNonNull(document.get("name")).toString();
                             Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
                             Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
@@ -450,26 +449,14 @@ public class MainActivity extends AppCompatActivity implements
                             Common.PHONE_NUMBER = phone;
                         }
                         setHeaderName();
-
-                        if (pass != null && !pass.isEmpty() && document.get("password") != null) {
-                            if (!pass.equals(Objects.requireNonNull(document.get("password")).toString())) {
-                                FirebaseAuth.getInstance().signOut();
-                                runOnUiThread(() -> {
-                                    userPreferences.edit().clear().apply();
-                                    Common.uid = "default";
-                                    Common.PHONE_NUMBER = "default";
-                                    Common.EMAIL = "default";
-                                    Common.NAME = "default";
-                                    Common.toastLong(getApplicationContext(),
-                                            getString(R.string.password_changed_recently_warning), Color.RED, Color.WHITE);
-                                    startActivity(new Intent(getApplicationContext(), Login.class));
-                                    finish();
-                                });
-                            }
-                        }
-
                     });
         }).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(getBaseContext(), UserCheck.class));
     }
 
     @Override

@@ -1,10 +1,12 @@
 package a.gautham.smartswitchboard.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,8 +20,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,9 +57,7 @@ public class Login extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
         preferences.edit().putInt("theme", AppCompatDelegate.getDefaultNightMode()).apply();
 
-        binding.register.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), Register.class));
-        });
+        binding.register.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Register.class)));
 
     }
 
@@ -80,46 +80,55 @@ public class Login extends AppCompatActivity {
 
             dialog.show();
 
-            FirebaseFirestore.getInstance().collection("Users")
-                    .get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    boolean contains = false;
-                    for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                        Map<String, Object> documentSnapshot = document.getData();
-                        if (documentSnapshot.containsValue(getEmail())) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (contains) {
-                        FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
-                                .addOnCompleteListener(task12 -> {
-                                    if (task12.isSuccessful()) {
-                                        SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                                        preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
-                                        preferences.edit().putString("password", getPassword()).apply();
-                                        preferences.edit().putBoolean("sync", true).apply();
-                                        Common.toastShort(getApplicationContext(), "Login successful", ContextCompat.getColor(
-                                                getApplicationContext(), R.color.dark_green
-                                        ), Color.BLACK);
-                                        Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-                                        if (dialog.isShowing())
-                                            dialog.dismiss();
-                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                        finish();
-                                    } else {
-                                        if (dialog.isShowing())
-                                            dialog.dismiss();
-                                        Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()), Color.RED, Color.WHITE);
-                                        Log.d("Login", Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()));
+            try {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
+                        .addOnCompleteListener(task12 -> {
+                            if (task12.isSuccessful()) {
+                                SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
+                                preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
+                                preferences.edit().putString("password", getPassword()).apply();
+                                preferences.edit().putBoolean("sync", true).apply();
+
+                                Common.toastShort(getApplicationContext(), "Login successful", ContextCompat.getColor(
+                                        getApplicationContext(), R.color.dark_green
+                                ), Color.BLACK);
+                                Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                                FirebaseFirestore.getInstance().collection("Users")
+                                        .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                                        .get().addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        @SuppressWarnings("unchecked")
+                                        Map<String, Map<String, Object>> devicesList = (Map<String, Map<String, Object>>) Objects.requireNonNull(task1.getResult()).get("devices");
+
+                                        if (devicesList == null)
+                                            devicesList = new HashMap<>();
+                                        else if (devicesList.containsValue(Common.DEVICE_ID))
+                                            devicesList.remove(Common.DEVICE_ID);
+
+                                        devicesList.put(Common.DEVICE_ID, new Common().getDeviceDetails(getApplicationContext(), true));
+                                        FirebaseFirestore.getInstance().collection("Users")
+                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                                                .update("devices", devicesList);
+
                                     }
                                 });
-                    } else {
-                        Common.toastShort(getApplicationContext(), "No User Found", 0, 0);
-                        dialog.dismiss();
-                    }
-                }
-            });
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                finish();
+                            } else {
+                                if (dialog.isShowing())
+                                    dialog.dismiss();
+                                Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()), Color.RED, Color.WHITE);
+                                Log.d("Login", Objects.requireNonNull(Objects.requireNonNull(task12.getException()).getMessage()));
+                            }
+                        });
+            } catch (Exception e) {
+                if (dialog.isShowing())
+                    dialog.dismiss();
+                Common.toastShort(getApplicationContext(), Objects.requireNonNull(Objects.requireNonNull(e.getMessage())), Color.RED, Color.WHITE);
+                Log.d("Login", Objects.requireNonNull(Objects.requireNonNull(e.getMessage())));
+            }
 
         });
 
@@ -133,6 +142,13 @@ public class Login extends AppCompatActivity {
             changePasswordFragment.show(getSupportFragmentManager(), changePasswordFragment.getTag());
         });
 
+    }
+
+    @SuppressLint("HardwareIds")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Common.DEVICE_ID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     private void textWatchers() {
@@ -150,13 +166,13 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (getEmail().isEmpty()){
+                if (getEmail().isEmpty()) {
                     binding.signInEmail.setError("Email can't be empty");
                     validateEmail = false;
-                }else if (!Patterns.EMAIL_ADDRESS.matcher(getEmail()).matches()){
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(getEmail()).matches()) {
                     binding.signInEmail.setError("Invalid e-mail");
                     validateEmail = false;
-                }else {
+                } else {
                     binding.signInEmail.setError(null);
                     validateEmail = true;
                 }
@@ -176,10 +192,10 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (getPassword().isEmpty()){
+                if (getPassword().isEmpty()) {
                     binding.signInPass.setError("Password can't be empty");
                     validatePass = false;
-                }else {
+                } else {
                     binding.signInPass.setError(null);
                     validatePass = true;
                 }

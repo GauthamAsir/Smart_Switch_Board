@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_180dp"
+    android:padding="@dimen/_12dp">
+
+    <ImageView
+        android:id="@+id/device_img"
+        android:layout_width="@dimen/_180dp"
+        android:layout_height="@dimen/_180dp"
+        android:contentDescription="@null"
+        android:padding="@dimen/_24dp"
+        android:src="@drawable/phone"
+        app:tint="?android:textColorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_toEndOf="@+id/device_img"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/device_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_6dp" />
+
+        <TextView
+            android:id="@+id/device_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_6dp" />
+
+        <TextView
+            android:id="@+id/last_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_6dp" />
+
+        <TextView
+            android:id="@+id/device_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_6dp" />
+
+        <TextView
+            android:id="@+id/device_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_6dp" />
+
+        <TextView
+            android:id="@+id/device_sdk_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+    </LinearLayout>
+
+</RelativeLayout>

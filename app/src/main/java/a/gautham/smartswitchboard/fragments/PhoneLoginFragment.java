@@ -35,6 +35,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -205,6 +207,27 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
                             preferences.edit().putString("uid", Objects.requireNonNull(documentSnapshot.get("uid")).toString()).apply();
                             Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
                             preferences.edit().putBoolean("sync", true).apply();
+
+                            FirebaseFirestore.getInstance().collection("Users")
+                                    .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                                    .get().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Map<String, Object>> devicesList = (Map<String, Map<String, Object>>) Objects.requireNonNull(task1.getResult()).get("devices");
+
+                                    if (devicesList == null)
+                                        devicesList = new HashMap<>();
+                                    else if (devicesList.containsValue(Common.DEVICE_ID))
+                                        devicesList.remove(Common.DEVICE_ID);
+
+                                    devicesList.put(Common.DEVICE_ID, new Common()
+                                            .getDeviceDetails(requireActivity(), true));
+                                    FirebaseFirestore.getInstance().collection("Users")
+                                            .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                                            .update("devices", devicesList);
+
+                                }
+                            });
 
                             Common.toastShort(getActivity(), "Login successful", ContextCompat.getColor(
                                     requireActivity(), R.color.dark_green

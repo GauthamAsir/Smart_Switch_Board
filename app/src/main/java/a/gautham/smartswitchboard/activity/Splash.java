@@ -1,10 +1,12 @@
 package a.gautham.smartswitchboard.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -18,10 +20,13 @@ public class Splash extends AppCompatActivity {
 
     Handler handler = new Handler();
 
+    @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        Common.DEVICE_ID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
         String uid = preferences.getString("uid", "default");

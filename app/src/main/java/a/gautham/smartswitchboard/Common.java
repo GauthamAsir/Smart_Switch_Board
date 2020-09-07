@@ -6,12 +6,21 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class Common {
 
@@ -20,6 +29,7 @@ public class Common {
     public static String uid = "default";
     public static String NAME = "default";
     public static boolean SETTINGS_ENABLED = false;
+    public static String DEVICE_ID = "";
 
     public static boolean checkInternet(Context context) {
         ConnectivityManager cm =
@@ -96,6 +106,51 @@ public class Common {
         builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    public static String getDate(long milliSeconds) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
+    public Map<String, Object> getDeviceDetails(Context context, boolean loggedIn) {
+
+        WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+        Map<String, Object> devices = new HashMap<>();
+        devices.put("device_id", Common.DEVICE_ID);
+        devices.put("logged_in", loggedIn);
+        devices.put("device_name", getDeviceName());
+        devices.put("sdk_version", String.valueOf(Build.VERSION.SDK_INT));
+        devices.put("last_login", System.currentTimeMillis());
+        devices.put("ip", ip);
+        return devices;
+    }
+
+    private String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+    private String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
+        }
     }
 
 }

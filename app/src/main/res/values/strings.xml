@@ -149,4 +149,10 @@
     <string name="nothing_deleted_yet">Nothing is Deleted yet!</string>
     <string name="restore_now">Restore Now</string>
     <string name="delete_forever">Delete Forever</string>
+    <string name="manage_devices">Manage Devices</string>
+    <string name="device_name">Device Name</string>
+    <string name="last_login">Last Login</string>
+    <string name="details">Details</string>
+    <string name="no_devices_found">No Devices Found</string>
+    <string name="logged_out_for_security_reasons">Logged Out for security reasons</string>
 </resources>
