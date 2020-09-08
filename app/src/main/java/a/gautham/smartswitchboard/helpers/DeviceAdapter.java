@@ -46,6 +46,11 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        if (Objects.requireNonNull(devices.get(position).get("device_id")).equals(Common.DEVICE_ID)) {
+            holder.log_out.setText(R.string.current_device);
+            holder.log_out.setEnabled(false);
+        }
+
         holder.device_name.setText(String.valueOf(devices.get(position).get("device_name")));
         long seconds = (long) devices.get(position).get("last_login");
         holder.last_login.setText(Common.getDate(seconds));

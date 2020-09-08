@@ -18,6 +18,7 @@ import java.util.Objects;
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.activity.Login;
+import a.gautham.smartswitchboard.activity.Splash;
 
 public class UserCheck extends Service {
 
@@ -64,7 +65,7 @@ public class UserCheck extends Service {
                 Map<String, Map<String, Object>> devicesList = (Map<String, Map<String, Object>>) document.get("devices");
                 if (devicesList != null) {
 
-                    if (!(boolean) Objects.requireNonNull(devicesList.get(Common.DEVICE_ID)).get("logged_in")) {
+                    if (!(boolean) Objects.requireNonNull(devicesList.get(id)).get("logged_in")) {
                         Common.toastShort(getApplicationContext(), getString(R.string.logged_out_for_security_reasons), Color.RED, Color.WHITE);
                         logOut();
                         return;
@@ -83,7 +84,6 @@ public class UserCheck extends Service {
 
         });
 
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -99,7 +99,8 @@ public class UserCheck extends Service {
         Common.PHONE_NUMBER = "default";
         Common.EMAIL = "default";
         Common.NAME = "default";
-        startActivity(new Intent(getApplicationContext(), Login.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        startActivity(new Intent(getApplicationContext(), Splash.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        onDestroy();
     }
 
     @Nullable
