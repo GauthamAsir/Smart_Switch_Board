@@ -156,4 +156,7 @@
     <string name="no_devices_found">No Devices Found</string>
     <string name="logged_out_for_security_reasons">Logged Out for security reasons</string>
     <string name="current_device">Current Device</string>
+    <string name="device_ip">Device Ip</string>
+    <string name="device_location">Device Location</string>
+    <string name="sdk_version">Sdk Version</string>
 </resources>
