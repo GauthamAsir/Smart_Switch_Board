@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,19 +85,20 @@ public class Login extends AppCompatActivity {
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(getEmail(), getPassword())
                         .addOnCompleteListener(task12 -> {
                             if (task12.isSuccessful()) {
+
+                                String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
                                 SharedPreferences preferences = getSharedPreferences("User", Context.MODE_PRIVATE);
-                                preferences.edit().putString("uid", Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).apply();
+                                preferences.edit().putString("uid", uid).apply();
                                 preferences.edit().putString("password", getPassword()).apply();
                                 preferences.edit().putBoolean("sync", true).apply();
+                                preferences.edit().putBoolean("notify", true).apply();
 
-                                Common.toastShort(getApplicationContext(), "Login successful", ContextCompat.getColor(
-                                        getApplicationContext(), R.color.dark_green
-                                ), Color.BLACK);
-                                Common.uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-                                if (dialog.isShowing())
-                                    dialog.dismiss();
+                                Common.uid = uid;
+                                FirebaseMessaging.getInstance().subscribeToTopic(Common.uid);
+                                FirebaseMessaging.getInstance().subscribeToTopic(Common.DEVICE_ID);
                                 FirebaseFirestore.getInstance().collection("Users")
-                                        .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                                        .document(uid)
                                         .get().addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
                                         @SuppressWarnings("unchecked")
@@ -109,13 +111,25 @@ public class Login extends AppCompatActivity {
 
                                         devicesList.put(Common.DEVICE_ID, new Common().getDeviceDetails(getApplicationContext(), true));
                                         FirebaseFirestore.getInstance().collection("Users")
-                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
-                                                .update("devices", devicesList);
-
+                                                .document(uid)
+                                                .update("devices", devicesList).addOnCompleteListener(
+                                                t -> {
+                                                    Common.toastShort(getApplicationContext(), "Login successful", ContextCompat.getColor(
+                                                            getApplicationContext(), R.color.dark_green
+                                                    ), Color.BLACK);
+                                                    if (dialog.isShowing())
+                                                        dialog.dismiss();
+                                                    if (t.isSuccessful()) {
+                                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                                        finish();
+                                                        return;
+                                                    }
+                                                    Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
+                                                    logOut();
+                                                }
+                                        );
                                     }
                                 });
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                finish();
                             } else {
                                 if (dialog.isShowing())
                                     dialog.dismiss();
@@ -142,6 +156,22 @@ public class Login extends AppCompatActivity {
             changePasswordFragment.show(getSupportFragmentManager(), changePasswordFragment.getTag());
         });
 
+    }
+
+    private void logOut() {
+        FirebaseAuth.getInstance().signOut();
+        SharedPreferences userPreferences = getSharedPreferences("User", MODE_PRIVATE);
+        int theme = userPreferences.getInt("theme", 0);
+        userPreferences.edit().clear().apply();
+        userPreferences.edit().putInt("theme", theme).apply();
+        SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+        Common.uid = "default";
+        Common.PHONE_NUMBER = "default";
+        Common.EMAIL = "default";
+        Common.NAME = "default";
+        startActivity(new Intent(getApplicationContext(), Splash.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        onDestroy();
     }
 
     @SuppressLint("HardwareIds")

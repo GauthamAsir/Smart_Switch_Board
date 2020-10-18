@@ -58,6 +58,13 @@
         </activity>
 
         <service android:name=".services.UserCheck" />
+        <service
+            android:name=".services.FirebaseMessagingServiceCustom"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

@@ -501,6 +501,7 @@ public class Register extends AppCompatActivity {
                        userMap.put("uid", Objects.requireNonNull(user).getUid());
 
                        FirebaseMessaging.getInstance().subscribeToTopic(Objects.requireNonNull(user).getUid());
+                       FirebaseMessaging.getInstance().subscribeToTopic(Common.DEVICE_ID);
 
                        firestore.collection("Phones").document(pno).set(map);
 

@@ -65,7 +65,7 @@ public class UserCheck extends Service {
                 Map<String, Map<String, Object>> devicesList = (Map<String, Map<String, Object>>) document.get("devices");
                 if (devicesList != null) {
 
-                    if (!(boolean) Objects.requireNonNull(devicesList.get(id)).get("logged_in")) {
+                    if (devicesList.get(id) != null && !(boolean) Objects.requireNonNull(devicesList.get(id)).get("logged_in")) {
                         Common.toastShort(getApplicationContext(), getString(R.string.logged_out_for_security_reasons), Color.RED, Color.WHITE);
                         logOut();
                         return;

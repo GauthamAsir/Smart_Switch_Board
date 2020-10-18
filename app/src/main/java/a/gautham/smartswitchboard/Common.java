@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import a.gautham.smartswitchboard.services.APIService;
+import a.gautham.smartswitchboard.services.FCMRetroFitClient;
+
 public class Common {
 
     public static String PHONE_NUMBER = "default";
@@ -30,6 +33,16 @@ public class Common {
     public static String NAME = "default";
     public static boolean SETTINGS_ENABLED = false;
     public static String DEVICE_ID = "";
+
+    public static final String fcmUrl = "https://fcm.googleapis.com/";
+
+    public static APIService getFCMService() {
+        return FCMRetroFitClient.getClient(fcmUrl).create(APIService.class);
+    }
+
+    public static APIService getFCMClient() {
+        return FCMRetroFitClient.getClient(fcmUrl).create(APIService.class);
+    }
 
     public static boolean checkInternet(Context context) {
         ConnectivityManager cm =

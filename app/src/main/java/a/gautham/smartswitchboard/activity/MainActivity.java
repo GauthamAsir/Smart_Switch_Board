@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -36,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -45,6 +47,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import a.gautham.library.AppUpdater;
@@ -56,8 +59,15 @@ import a.gautham.smartswitchboard.helpers.ListAdapterSSB;
 import a.gautham.smartswitchboard.helpers.NewConnectionIsAwesome;
 import a.gautham.smartswitchboard.helpers.RestoreSwitches;
 import a.gautham.smartswitchboard.helpers.SharingIsCaringSSB;
+import a.gautham.smartswitchboard.models.MyResponse;
+import a.gautham.smartswitchboard.models.Notification;
+import a.gautham.smartswitchboard.models.Sender;
+import a.gautham.smartswitchboard.services.APIService;
 import a.gautham.smartswitchboard.services.UserCheck;
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, ListAdapterSSB.customButtonListener {
@@ -77,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences userPreferences;
     private boolean isFABOpen = false;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
+    private APIService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        service = Common.getFCMClient();
 
         startService(new Intent(getBaseContext(), UserCheck.class));
 
@@ -380,6 +393,8 @@ public class MainActivity extends AppCompatActivity implements
         userPreferences.edit().clear().apply();
         userPreferences.edit().putInt("theme", theme).apply();
         SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Common.uid);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Common.DEVICE_ID);
         prefs.edit().clear().apply();
         Common.uid = "default";
         Common.PHONE_NUMBER = "default";
@@ -408,9 +423,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void checkUserData() {
+
         new Thread(() -> {
             if (Common.uid.equals("default")) {
-                FirebaseAuth.getInstance().signOut();
                 runOnUiThread(() -> {
                     Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
                     logOut();
@@ -428,13 +443,22 @@ public class MainActivity extends AppCompatActivity implements
 
                         DocumentSnapshot document = task.getResult();
 
+                        if (document == null) {
+                            runOnUiThread(() -> {
+                                Common.toastShort(getApplicationContext(), getString(R.string.something_went_wrong), Color.RED, Color.WHITE);
+                                logOut();
+                                startActivity(new Intent(getApplicationContext(), Login.class));
+                                finish();
+                            });
+                            return;
+                        }
+
                         String mail = userPreferences.getString("email", "");
                         String name = userPreferences.getString("name", "");
                         String phone = userPreferences.getString("phone_number", "");
 
                         if (mail == null || mail.isEmpty() || name == null || name.isEmpty() || phone == null || phone.isEmpty()) {
 
-                            assert document != null;
                             Common.NAME = Objects.requireNonNull(document.get("name")).toString();
                             Common.EMAIL = Objects.requireNonNull(document.get("email")).toString();
                             Common.PHONE_NUMBER = Objects.requireNonNull(document.get("phone_number")).toString();
@@ -449,8 +473,57 @@ public class MainActivity extends AppCompatActivity implements
                             Common.PHONE_NUMBER = phone;
                         }
                         setHeaderName();
+
+                        boolean notify = userPreferences.getBoolean("notify", false);
+
+                        if (notify) {
+
+                            @SuppressWarnings("unchecked")
+                            Map<String, Map<String, Object>> devicesList = (Map<String, Map<String, Object>>)
+                                    document.get("devices");
+
+                            if (devicesList == null)
+                                notify = true;
+                            else {
+                                for (Map.Entry<String, Map<String, Object>> entry : devicesList.entrySet()) {
+                                    if (!entry.getKey().equals(Common.DEVICE_ID))
+                                        notifyLogin(entry.getKey(),
+                                                Objects.requireNonNull(Objects.requireNonNull(devicesList.get(entry.getKey())).get("device_name")));
+                                }
+                                notify = false;
+                            }
+
+                        }
+                        userPreferences.edit().putBoolean("notify", notify).apply();
+
                     });
         }).start();
+    }
+
+    private void notifyLogin(String senderId, Object device_name) {
+        Notification notification = new Notification("New Login Detected from " + device_name.toString(),
+                "New Login Alert");
+
+        Sender toTopic = new Sender();
+
+        toTopic.to = "/topics/" + senderId;
+        toTopic.notification = notification;
+
+        service.sendNotification(toTopic).enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MyResponse> call, @NonNull Response<MyResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.d("Notify Login", "Success");
+                } else {
+                    Log.d("Notify Login", "Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MyResponse> call, @NonNull Throwable t) {
+                Log.d("Notify Login", "onFailure");
+            }
+        });
     }
 
     @Override

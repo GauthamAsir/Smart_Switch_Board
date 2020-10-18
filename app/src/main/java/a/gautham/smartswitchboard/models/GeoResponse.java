@@ -1,4 +1,4 @@
-package a.gautham.smartswitchboard.helpers;
+package a.gautham.smartswitchboard.models;
 
 import androidx.annotation.NonNull;
 

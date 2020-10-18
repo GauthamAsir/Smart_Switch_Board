@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -71,7 +70,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
             devicesList.put(Common.DEVICE_ID, new Common().getDeviceDetails(context, false));
 
             FirebaseFirestore.getInstance().collection("Users")
-                    .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
+                    .document(Common.uid)
                     .update("devices", devicesList);
             notifyDataSetChanged();
 

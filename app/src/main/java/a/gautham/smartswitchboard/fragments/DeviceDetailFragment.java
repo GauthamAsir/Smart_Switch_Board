@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.databinding.DeviceDetailsFragmentBinding;
-import a.gautham.smartswitchboard.helpers.GeoResponse;
+import a.gautham.smartswitchboard.models.GeoResponse;
 import a.gautham.smartswitchboard.services.LocationApiService;
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -34,6 +34,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -207,6 +208,10 @@ public class PhoneLoginFragment extends BottomSheetDialogFragment {
                             preferences.edit().putString("uid", Objects.requireNonNull(documentSnapshot.get("uid")).toString()).apply();
                             Common.uid = Objects.requireNonNull(documentSnapshot.get("uid")).toString();
                             preferences.edit().putBoolean("sync", true).apply();
+                            preferences.edit().putBoolean("notify", true).apply();
+
+                            FirebaseMessaging.getInstance().subscribeToTopic(Common.uid);
+                            FirebaseMessaging.getInstance().subscribeToTopic(Common.DEVICE_ID);
 
                             FirebaseFirestore.getInstance().collection("Users")
                                     .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid())
