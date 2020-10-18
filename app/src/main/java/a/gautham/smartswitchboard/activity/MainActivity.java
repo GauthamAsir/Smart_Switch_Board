@@ -487,8 +487,7 @@ public class MainActivity extends AppCompatActivity implements
                             else {
                                 for (Map.Entry<String, Map<String, Object>> entry : devicesList.entrySet()) {
                                     if (!entry.getKey().equals(Common.DEVICE_ID))
-                                        notifyLogin(entry.getKey(),
-                                                Objects.requireNonNull(Objects.requireNonNull(devicesList.get(entry.getKey())).get("device_name")));
+                                        notifyLogin(entry.getKey(), Common.getDeviceName());
                                 }
                                 notify = false;
                             }

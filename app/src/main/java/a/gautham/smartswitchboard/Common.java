@@ -36,10 +36,6 @@ public class Common {
 
     public static final String fcmUrl = "https://fcm.googleapis.com/";
 
-    public static APIService getFCMService() {
-        return FCMRetroFitClient.getClient(fcmUrl).create(APIService.class);
-    }
-
     public static APIService getFCMClient() {
         return FCMRetroFitClient.getClient(fcmUrl).create(APIService.class);
     }
@@ -144,7 +140,7 @@ public class Common {
         return devices;
     }
 
-    private String getDeviceName() {
+    public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         if (model.startsWith(manufacturer)) {
@@ -154,7 +150,7 @@ public class Common {
         }
     }
 
-    private String capitalize(String s) {
+    public static String capitalize(String s) {
         if (s == null || s.length() == 0) {
             return "";
         }
