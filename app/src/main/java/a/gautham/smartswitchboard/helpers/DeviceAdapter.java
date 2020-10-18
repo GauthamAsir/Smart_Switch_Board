@@ -45,11 +45,6 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        if (Objects.requireNonNull(devices.get(position).get("device_id")).equals(Common.DEVICE_ID)) {
-            holder.log_out.setText(R.string.current_device);
-            holder.log_out.setEnabled(false);
-        }
-
         holder.device_name.setText(String.valueOf(devices.get(position).get("device_name")));
         long seconds = (long) devices.get(position).get("last_login");
         holder.last_login.setText(Common.getDate(seconds));
@@ -60,14 +55,20 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
             phoneLoginFragment.show(((ManageDevice) context).getSupportFragmentManager(), phoneLoginFragment.getTag());
         });
 
+        if (Objects.requireNonNull(devices.get(position).get("device_id")).equals(Common.DEVICE_ID)) {
+            holder.log_out.setText(R.string.current_device);
+            holder.log_out.setEnabled(false);
+            return;
+        }
+
         holder.log_out.setOnClickListener(view -> {
 
             Map<String, Map<String, Object>> devicesList = map;
-            map.remove(devices.get(position).get("device_id"));
-
-            devicesList.remove(position);
-
-            devicesList.put(Common.DEVICE_ID, new Common().getDeviceDetails(context, false));
+            Map<String, Object> details = map.get(devices.get(position).get("device_id"));
+            if (details != null) {
+                details.put("logged_in", false);
+            }
+            devicesList.put(Objects.requireNonNull(devices.get(position).get("device_id")).toString(), details);
 
             FirebaseFirestore.getInstance().collection("Users")
                     .document(Common.uid)

@@ -159,4 +159,5 @@
     <string name="device_ip">Device Ip</string>
     <string name="device_location">Device Location</string>
     <string name="sdk_version">Sdk Version</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

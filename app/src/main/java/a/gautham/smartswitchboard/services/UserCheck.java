@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Map;
 import java.util.Objects;
@@ -94,6 +95,8 @@ public class UserCheck extends Service {
         userPreferences.edit().clear().apply();
         userPreferences.edit().putInt("theme", theme).apply();
         SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Common.uid);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(Common.DEVICE_ID);
         prefs.edit().clear().apply();
         Common.uid = "default";
         Common.PHONE_NUMBER = "default";
