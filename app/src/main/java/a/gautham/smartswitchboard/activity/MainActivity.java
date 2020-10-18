@@ -408,9 +408,11 @@ public class MainActivity extends AppCompatActivity implements
         //SnackBar
         Snackbar snackbar = Snackbar.make(binding.drawerLayout, R.string.press_again_to_exit, Snackbar.LENGTH_SHORT);
 
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
             binding.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        else if (isFABOpen)
+            animateFAB();
+        else {
             if (back_pressed + 2000 > System.currentTimeMillis()) {
                 finish();
                 System.exit(1);
