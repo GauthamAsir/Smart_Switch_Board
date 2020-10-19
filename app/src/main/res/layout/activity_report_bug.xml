@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,6 +30,62 @@
         android:text="@string/add_screenshots_optional"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="@color/colorAccent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/screenshot_imgs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header1"
+        android:layout_margin="@dimen/_12dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/screenshot_imgs"
+        android:layout_marginStart="@dimen/_24dp"
+        android:layout_marginTop="@dimen/_6dp"
+        android:layout_marginEnd="@dimen/_24dp"
+        android:background="@drawable/outline_background">
+
+        <TextView
+            android:id="@+id/t1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_6dp"
+            android:text="@string/attach_log_file"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_3dp"
+            android:layout_toEndOf="@+id/t1"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_baseline_attach_file_24" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/t1"
+            android:background="@drawable/outline_bug_2">
+
+            <TextView
+                android:id="@+id/log_file_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:textAppearanceSmall" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_baseline_close_24"
+                app:tint="@android:color/white" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
 
     <Button
         android:layout_width="match_parent"

@@ -66,7 +66,7 @@
     <string name="togglebutton">ToggleButton</string>
     <string name="not_connected_to_ssb">Not connected to any SSB</string>
     <string name="enter_valid_otp">Enter valid otp</string>
-    <string name="describe_your_problem_bug">Describe your problem/bug</string>
+    <string name="describe_your_problem_bug">Describe your problem/bug.\nSteps to reproduce the bug</string>
     <string name="add_screenshots_optional">Add Screenshots (optional)</string>
     <string name="contact_us_via">Contact us via</string>
     <string name="support_mail">yash8hajare@gmail.com</string>
@@ -160,4 +160,5 @@
     <string name="device_location">Device Location</string>
     <string name="sdk_version">Sdk Version</string>
     <string name="sign_out">Sign Out</string>
+    <string name="attach_log_file">Attach Log file</string>
 </resources>
