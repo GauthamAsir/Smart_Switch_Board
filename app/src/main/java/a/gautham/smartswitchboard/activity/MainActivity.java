@@ -63,7 +63,6 @@ import a.gautham.smartswitchboard.models.MyResponse;
 import a.gautham.smartswitchboard.models.Notification;
 import a.gautham.smartswitchboard.models.Sender;
 import a.gautham.smartswitchboard.services.APIService;
-import a.gautham.smartswitchboard.services.Connection;
 import a.gautham.smartswitchboard.services.UserCheck;
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
@@ -101,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements
 
         service = Common.getFCMClient();
 
-        startService(new Intent(getBaseContext(), Connection.class));
+        //startService(new Intent(getBaseContext(), Connection.class));
         startService(new Intent(getBaseContext(), UserCheck.class));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -570,7 +569,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(getBaseContext(), UserCheck.class));
-        stopService(new Intent(getBaseContext(), Connection.class));
+        //stopService(new Intent(getBaseContext(), Connection.class));
     }
 
     @Override
