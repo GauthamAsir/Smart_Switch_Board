@@ -239,35 +239,47 @@ public class SettingsActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
 
                 if (task.isSuccessful() && document != null) {
-                    if (document.get("ssb_list") != null) {
-                        ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
-                        ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
-                        if (arrayList.size() > 0) {
-                            for (String s : arrayList) {
-                                ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
-                                ssbList.add(myList);
-                            }
-                            saveArrayList(ssbList);
-                            AlertDialog.Builder successBuilder = new AlertDialog.Builder(requireActivity());
-                            successBuilder.setTitle(R.string.sync);
-                            successBuilder.setMessage(R.string.sync_successful);
 
-                            successBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
+                    if (document.get("deleted_ssb") != null)
+                        convertData(document, "deleted_ssb");
 
-                            AlertDialog successDialog = successBuilder.create();
-                            successDialog.show();
-                            successDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                                    ContextCompat.getColor(requireActivity(), R.color.colorAccent)
-                            );
-                        }
-                    }
+                    if (document.get("ssb_list") != null)
+                        convertData(document, "ssb_list");
+
+                    AlertDialog.Builder successBuilder = new AlertDialog.Builder(requireActivity());
+                    successBuilder.setTitle(R.string.sync);
+                    successBuilder.setMessage(R.string.sync_successful);
+
+                    successBuilder.setPositiveButton(R.string.ok, (dialogInterface, i) -> dialogInterface.dismiss());
+
+                    AlertDialog successDialog = successBuilder.create();
+                    successDialog.show();
+                    successDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                            ContextCompat.getColor(requireActivity(), R.color.colorAccent)
+                    );
                 } else {
                     Common.toastLong(requireActivity(), getString(R.string.unable_to_sync_old_data), 0, 0);
                 }
             });
         }
 
-        public void saveArrayList(ArrayList<ArrayList<String>> list) {
+        private void convertData(DocumentSnapshot document, String k) {
+
+            String key = k.equals("ssb_list") ? "fire_db_temp" : "deleted_ssbs";
+
+            @SuppressWarnings("unchecked")
+            ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get(k));
+            ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+            if (arrayList.size() > 0) {
+                for (String s : arrayList) {
+                    ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                    ssbList.add(myList);
+                }
+            }
+            saveArrayList(ssbList, key);
+        }
+
+        public void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
             SharedPreferences prefs = requireActivity().getSharedPreferences("DB_temp", MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             Gson gson = new Gson();
