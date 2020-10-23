@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements
     private boolean isFABOpen = false;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
     private APIService service;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.menu_home);
 
         firestore = FirebaseFirestore.getInstance();
+
+        prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
 
         binding.navView.setNavigationItemSelectedListener(this);
 
@@ -251,9 +255,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void syncSSBList(String uid) {
 
-        SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
-
-        SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
         preferenceChangeListener = (sharedPreferences, s) -> {
             if (fire_list != null) fire_list.clear();
             getList();
@@ -269,7 +270,8 @@ public class MainActivity extends AppCompatActivity implements
 
             if (task.isSuccessful() && document != null) {
                 if (document.get("ssb_list") != null) {
-                    @SuppressWarnings("unchecked")
+                    convertData(document, "ssb_list");
+                    /*@SuppressWarnings("unchecked")
                     ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
                     ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
                     if (arrayList.size() > 0) {
@@ -277,21 +279,56 @@ public class MainActivity extends AppCompatActivity implements
                             ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
                             ssbList.add(myList);
                         }
-                        saveArrayList(ssbList);
+                        saveArrayList(ssbList, "fire_db_temp");
                         prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
-                    }
+                    }*/
                 }
+
+                if (document.get("deleted_ssb") != null) {
+                    convertData(document, "deleted_ssb");
+                    /*ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+                    if (arrayList.size() > 0) {
+                        for (String s : arrayList) {
+                            ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                            ssbList.add(myList);
+                        }
+                        saveArrayList(ssbList, "deleted_ssbs");
+                        prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+                    }*/
+                }
+
             } else {
                 Common.toastLong(getApplicationContext(), getString(R.string.unable_to_sync_old_data), 0, 0);
             }
         });
     }
 
-    private void saveArrayList(ArrayList<ArrayList<String>> list) {
+    private void convertData(DocumentSnapshot document, String k) {
+
+        String key = k.equals("ssb_list") ? "fire_db_temp" : "deleted_ssbs";
+
+        @SuppressWarnings("unchecked")
+        ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get(k));
+        ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+        if (arrayList.size() > 0) {
+            for (String s : arrayList) {
+                ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
+                ssbList.add(myList);
+            }
+            saveArrayList(ssbList, key);
+            if (key.equals("deleted_ssbs")) {
+                prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
+            }
+        } else {
+            saveArrayList(ssbList, key);
+        }
+    }
+
+    private void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
         SharedPreferences prefs = getSharedPreferences("DB_temp", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        prefs.edit().putString("fire_db_temp", json).apply();
+        prefs.edit().putString(key, json).apply();
     }
 
     @Override

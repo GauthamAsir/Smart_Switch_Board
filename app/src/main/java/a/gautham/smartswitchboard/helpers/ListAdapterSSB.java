@@ -353,8 +353,12 @@ public class ListAdapterSSB extends ArrayAdapter<String> {
             String joined = TextUtils.join(",", s);
             singleList.add(joined);
         }
-        FirebaseFirestore.getInstance().collection("Users")
-                .document(Common.uid).update("ssb_list", singleList);
+        if (key.equals("deleted_ssbs"))
+            FirebaseFirestore.getInstance().collection("Users")
+                    .document(Common.uid).update("deleted_ssb", singleList);
+        else
+            FirebaseFirestore.getInstance().collection("Users")
+                    .document(Common.uid).update("ssb_list", singleList);
     }
 
     @Override

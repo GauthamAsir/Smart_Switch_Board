@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -13,12 +14,14 @@ import androidx.core.content.ContextCompat;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import a.gautham.smartswitchboard.Common;
 import a.gautham.smartswitchboard.R;
 import a.gautham.smartswitchboard.activity.MainActivity;
 
@@ -42,8 +45,8 @@ public class RestoreSwitches {
             Toast.makeText(context, R.string.nothing_deleted_yet, Toast.LENGTH_SHORT).show();
         } else {
 
-            final ArrayList<String> deleted_fire_list = new ArrayList<String>();
-            final ArrayList<String> deleted_name_list = new ArrayList<String>();
+            final ArrayList<String> deleted_fire_list = new ArrayList<>();
+            final ArrayList<String> deleted_name_list = new ArrayList<>();
 
             final ArrayList<String> AA_array = new ArrayList<>();
             final ArrayList<Boolean> BB_array = new ArrayList<>();
@@ -244,6 +247,20 @@ public class RestoreSwitches {
         String json = gson.toJson(list);
         editor.putString(key, json);
         editor.apply();
+        Type type = new TypeToken<ArrayList<ArrayList<String>>>() {
+        }.getType();
+        ArrayList<ArrayList<String>> ssbList = gson.fromJson(json, type);
+        ArrayList<String> singleList = new ArrayList<>();
+        for (ArrayList<String> s : ssbList) {
+            String joined = TextUtils.join(",", s);
+            singleList.add(joined);
+        }
+        if (key.equals("deleted_ssbs"))
+            FirebaseFirestore.getInstance().collection("Users")
+                    .document(Common.uid).update("deleted_ssb", singleList);
+        else
+            FirebaseFirestore.getInstance().collection("Users")
+                    .document(Common.uid).update("ssb_list", singleList);
     }
 
     public ArrayList<ArrayList<String>> getArrayList(String key) {
