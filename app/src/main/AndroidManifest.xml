@@ -26,6 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".NoInternet"></activity>
         <activity android:name=".activity.ManageDevice" />
         <activity android:name=".activity.ReportBug" />
         <activity
@@ -58,6 +59,7 @@
         </activity>
 
         <service android:name=".services.UserCheck" />
+        <service android:name=".services.Connection" />
         <service
             android:name=".services.FirebaseMessagingServiceCustom"
             android:exported="false">
