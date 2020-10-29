@@ -22,3 +22,6 @@
 -keepclassmembers,allowobfuscation class * {
   @com.google.gson.annotations.SerializedName <fields>;
 }
+-keep class dmax.dialog.** {*;}
+-keep class com.journeyapps.** {*;}
+-keep class a.gautham.library.** {*;}
