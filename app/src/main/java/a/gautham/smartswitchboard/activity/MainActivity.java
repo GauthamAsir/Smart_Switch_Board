@@ -1,5 +1,6 @@
 package a.gautham.smartswitchboard.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -318,8 +319,6 @@ public class MainActivity extends AppCompatActivity implements
             if (key.equals("deleted_ssbs")) {
                 prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
             }
-        } else {
-            saveArrayList(ssbList, key);
         }
     }
 
@@ -362,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements
         t1.setText(String.format(Locale.getDefault(), "Hello, %s", Common.NAME));
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 

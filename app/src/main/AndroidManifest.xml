@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".NoInternet"></activity>
+        <activity android:name=".NoInternet" />
         <activity android:name=".activity.ManageDevice" />
         <activity android:name=".activity.ReportBug" />
         <activity
