@@ -25,7 +25,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:name=".App"
+        android:appComponentFactory="androidx"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:appComponentFactory"
+        tools:targetApi="p">
         <activity android:name=".NoInternet" />
         <activity android:name=".activity.ManageDevice" />
         <activity android:name=".activity.ReportBug" />

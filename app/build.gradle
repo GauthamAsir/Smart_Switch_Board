@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('E:\\000Gautham\\Android Projects\\signed_apps_keystore.jks')
+            storePassword 'agav0012'
+            keyAlias 'Mellow'
+            keyPassword 'agav0012'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
     buildFeatures {
@@ -14,14 +22,36 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.3"
+        multiDexEnabled true
         String d = System.currentTimeMillis().toString()
         setProperty("archivesBaseName", "smart_switch_board_v$versionName-$d")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    /*signingConfigs{
+        debug{
+            keyAlias 'Mellow'
+            keyPassword 'agav0012'
+            storeFile file('E:\\000Gautham\\Android Projects\\signed_apps_keystore.jks')
+            storePassword 'agav0012'
+        }
+        release{
+            keyAlias 'Mellow'
+            keyPassword 'agav0012'
+            storeFile file('E:\\000Gautham\\Android Projects\\signed_apps_keystore.jks')
+            storePassword 'agav0012'
+        }
+    }*/
+
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -50,7 +80,7 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'com.google.firebase:firebase-firestore:21.7.1'
-    implementation 'com.google.firebase:firebase-database:19.5.0'
+    implementation 'com.google.firebase:firebase-database:19.5.1'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
     implementation 'com.google.firebase:firebase-analytics:17.6.0'
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.0'
@@ -67,5 +97,7 @@ dependencies {
 
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+
+    implementation 'androidx.multidex:multidex:2.0.1'
 
 }

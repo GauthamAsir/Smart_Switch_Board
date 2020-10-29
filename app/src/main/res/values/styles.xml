@@ -39,7 +39,7 @@
         <item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
     </style>
 
-    <style name="DialogCustom" parent="android:Theme.Material.Light.Dialog">
+    <style name="DialogCustom" parent="android:Theme.Material.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
         <item name="DialogSpotColor">@color/colorAccent</item>
         <item name="DialogSpotCount">5</item>
