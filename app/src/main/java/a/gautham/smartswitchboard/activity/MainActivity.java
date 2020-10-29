@@ -270,8 +270,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (task.isSuccessful() && document != null) {
                 if (document.get("ssb_list") != null) {
-                    convertData(document, "ssb_list");
-                    /*@SuppressWarnings("unchecked")
+                    @SuppressWarnings("unchecked")
                     ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
                     ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
                     if (arrayList.size() > 0) {
@@ -281,12 +280,15 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         saveArrayList(ssbList, "fire_db_temp");
                         prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
-                    }*/
+                    } else {
+                        saveArrayList(ssbList, "fire_db_temp");
+                    }
                 }
 
                 if (document.get("deleted_ssb") != null) {
-                    convertData(document, "deleted_ssb");
-                    /*ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
+                    @SuppressWarnings("unchecked")
+                    ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get("ssb_list"));
+                    ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
                     if (arrayList.size() > 0) {
                         for (String s : arrayList) {
                             ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
@@ -294,32 +296,15 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         saveArrayList(ssbList, "deleted_ssbs");
                         prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
-                    }*/
+                    } else {
+                        saveArrayList(ssbList, "deleted_ssbs");
+                    }
                 }
 
             } else {
                 Common.toastLong(getApplicationContext(), getString(R.string.unable_to_sync_old_data), 0, 0);
             }
         });
-    }
-
-    private void convertData(DocumentSnapshot document, String k) {
-
-        String key = k.equals("ssb_list") ? "fire_db_temp" : "deleted_ssbs";
-
-        @SuppressWarnings("unchecked")
-        ArrayList<String> arrayList = (ArrayList<String>) Objects.requireNonNull(document.get(k));
-        ArrayList<ArrayList<String>> ssbList = new ArrayList<>();
-        if (arrayList.size() > 0) {
-            for (String s : arrayList) {
-                ArrayList<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
-                ssbList.add(myList);
-            }
-            saveArrayList(ssbList, key);
-            if (key.equals("deleted_ssbs")) {
-                prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
-            }
-        }
     }
 
     private void saveArrayList(ArrayList<ArrayList<String>> list, String key) {
